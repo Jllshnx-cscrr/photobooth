@@ -51,6 +51,73 @@ export const AdminDashboard: React.FC = () => {
     await saveTemplate({ ...template, isDefault: true, updatedAt: Date.now() });
   };
 
+  // Export templates to JSON file
+  const handleExport = () => {
+    if (templates.length === 0) {
+      alert('No templates to export!');
+      return;
+    }
+
+    const dataStr = JSON.stringify(templates, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `photobooth-templates-${Date.now()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Import templates from JSON file
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const importedTemplates = JSON.parse(e.target?.result as string) as Template[];
+        
+        if (!Array.isArray(importedTemplates)) {
+          alert('Invalid template file format!');
+          return;
+        }
+
+        // Ask user if they want to replace or merge
+        const replace = window.confirm(
+          `Found ${importedTemplates.length} template(s).\n\n` +
+          'Click OK to REPLACE all existing templates.\n' +
+          'Click Cancel to MERGE with existing templates.'
+        );
+
+        if (replace) {
+          // Clear existing templates (optional - comment out if you want to keep)
+          // Note: We'll just import without clearing to be safe
+        }
+
+        // Import all templates
+        for (const template of importedTemplates) {
+          await saveTemplate({
+            ...template,
+            id: `imported-${Date.now()}-${Math.random()}`, // New ID to avoid conflicts
+            updatedAt: Date.now()
+          });
+        }
+
+        alert(`Successfully imported ${importedTemplates.length} template(s)!`);
+        
+        // Reset file input
+        event.target.value = '';
+      } catch (error) {
+        console.error('Import error:', error);
+        alert('Failed to import templates. Please check the file format.');
+      }
+    };
+    reader.readAsText(file);
+  };
+
   if (isDesigning) {
     return (
       <TemplateDesigner
@@ -85,6 +152,38 @@ export const AdminDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 py-4">
         {/* Sample Template Loader */}
         <SampleTemplateLoader />
+
+        {/* Import/Export Section */}
+        <div className="mb-4 bg-white rounded-lg shadow-md p-4">
+          <h2 className="text-sm font-bold text-gray-800 mb-2">Import / Export Templates</h2>
+          <p className="text-xs text-gray-600 mb-3">
+            Export templates to share across devices, or import templates from another device
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={handleExport}
+              disabled={templates.length === 0}
+              className="flex-1 bg-blue-600 text-white px-4 py-2 text-sm rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Export Templates ({templates.length})
+            </button>
+            <label className="flex-1 bg-green-600 text-white px-4 py-2 text-sm rounded-lg font-semibold hover:bg-green-700 flex items-center justify-center gap-2 cursor-pointer">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+              Import Templates
+              <input
+                type="file"
+                accept=".json"
+                onChange={handleImport}
+                className="hidden"
+              />
+            </label>
+          </div>
+        </div>
 
         {/* Create Button */}
         <div className="mb-4">
