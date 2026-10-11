@@ -1,0 +1,38 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies (DON'T upload to hosting)
+node_modules
+
+# Build output (ONLY upload this folder's contents)
+dist
+dist-ssr
+
+# Local env files
+*.local
+.env
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Deployment note:
+# To deploy, only upload the CONTENTS of the dist/ folder:
+# - dist/index.html
+# - dist/assets/
+# - dist/camera.svg
+# Plus create a .htaccess file on the server
+# See DEPLOYMENT_FILES.md for details

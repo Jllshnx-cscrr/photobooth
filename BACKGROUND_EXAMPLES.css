@@ -1,0 +1,220 @@
+/* ============================================
+   BACKGROUND IMAGE EXAMPLES
+   Copy any of these to src/custom.css
+   ============================================ */
+
+/* ===== EXAMPLE 1: Simple Background Image ===== */
+.welcome-screen {
+  background-image: url('/backgrounds/welcome-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+/* ===== EXAMPLE 2: Background with Dark Overlay ===== */
+.welcome-screen {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('/backgrounds/welcome-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+/* ===== EXAMPLE 3: Background with Light Overlay ===== */
+.welcome-screen {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)),
+    url('/backgrounds/welcome-bg.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+
+/* ===== EXAMPLE 4: Gradient Overlay for Better Text ===== */
+.welcome-screen {
+  background-image: 
+    linear-gradient(to bottom, rgba(138, 92, 246, 0.6), rgba(236, 72, 153, 0.6)),
+    url('/backgrounds/welcome-bg.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+
+/* ===== EXAMPLE 5: Fixed Parallax Effect ===== */
+.welcome-screen {
+  background-image: url('/backgrounds/welcome-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+
+/* ===== EXAMPLE 6: Blurred Background ===== */
+.welcome-screen {
+  position: relative;
+}
+
+.welcome-screen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/backgrounds/welcome-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: blur(10px);
+  z-index: -1;
+}
+
+
+/* ===== EXAMPLE 7: Animated Panning Background ===== */
+@keyframes bg-pan {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.welcome-screen {
+  background-image: url('/backgrounds/welcome-bg.jpg');
+  background-size: 150%;
+  background-position: center;
+  animation: bg-pan 30s ease-in-out infinite;
+}
+
+
+/* ===== EXAMPLE 8: Multiple Backgrounds (Layered) ===== */
+.welcome-screen {
+  background-image: 
+    url('/backgrounds/overlay.png'),
+    url('/backgrounds/main-bg.jpg');
+  background-size: contain, cover;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+}
+
+
+/* ===== EXAMPLE 9: Responsive Backgrounds ===== */
+/* Mobile */
+.welcome-screen {
+  background-image: url('/backgrounds/mobile-bg.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .welcome-screen {
+    background-image: url('/backgrounds/tablet-bg.jpg');
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .welcome-screen {
+    background-image: url('/backgrounds/desktop-bg.jpg');
+  }
+}
+
+
+/* ===== EXAMPLE 10: Final Preview Background ===== */
+.final-preview-bg {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+    url('/backgrounds/preview-bg.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+
+/* ===== EXAMPLE 11: Camera Screen Background ===== */
+.min-h-screen.bg-gray-900 {
+  background-image: url('/backgrounds/camera-bg.jpg') !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+
+/* ===== EXAMPLE 12: Vignette Effect ===== */
+.welcome-screen {
+  background-image: 
+    radial-gradient(circle, transparent 30%, rgba(0, 0, 0, 0.7)),
+    url('/backgrounds/welcome-bg.jpg');
+  background-size: cover, cover;
+  background-position: center, center;
+}
+
+
+/* ===== EXAMPLE 13: Bokeh/Blur Top and Bottom ===== */
+.welcome-screen {
+  background-image: url('/backgrounds/welcome-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.welcome-screen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+  z-index: 0;
+}
+
+.welcome-screen::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  z-index: 0;
+}
+
+
+/* ===== EXAMPLE 14: Enhance Text Visibility ===== */
+/* Use with any background image */
+.welcome-screen h1,
+.welcome-screen h2,
+.welcome-screen p {
+  text-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-screen button {
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.3),
+    0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+/* ===== EXAMPLE 15: Fallback Color While Loading ===== */
+.welcome-screen {
+  background-color: #8b5cf6; /* Shows while image loads */
+  background-image: url('/backgrounds/welcome-bg.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+
+/* ============================================
+   HOW TO USE THESE EXAMPLES:
+   
+   1. Choose an example you like
+   2. Copy the CSS code
+   3. Paste it into src/custom.css
+   4. Add your image to public/backgrounds/
+   5. Update the image path if needed
+   6. Run: npm run build
+   7. Refresh your browser
+   
+   ============================================ */

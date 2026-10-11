@@ -1,0 +1,37 @@
+
+╔═══════════════════════════════════════════════════════════════════╗
+║                                                                   ║
+║                     📸  PHOTO BOOTH SYSTEM  📸                    ║
+║                                                                   ║
+║              Modern Web-Based Photo Capture & Design              ║
+║                                                                   ║
+╠═══════════════════════════════════════════════════════════════════╣
+║                                                                   ║
+║  ✨ Features:                                                     ║
+║                                                                   ║
+║     • Automatic 8-photo capture with countdown                   ║
+║     • Select 4 favorite photos                                   ║
+║     • Customize with filters & adjustments                       ║
+║     • Drag-and-drop template designer                            ║
+║     • Download & print high-quality images                       ║
+║     • No server required - works offline                         ║
+║                                                                   ║
+║  🚀 Quick Start:                                                  ║
+║                                                                   ║
+║     npm install                                                   ║
+║     npm run dev                                                   ║
+║                                                                   ║
+║  📚 Documentation:                                                ║
+║                                                                   ║
+║     • GET_STARTED.md    - Start here!                            ║
+║     • QUICK_START.md    - 5-minute setup                         ║
+║     • README.md         - Complete guide                         ║
+║     • COMMANDS.md       - Command reference                      ║
+║                                                                   ║
+║  🎯 Status: ✅ Complete & Production Ready                        ║
+║                                                                   ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+Built with: React • TypeScript • Vite • Tailwind CSS
+
+Version 1.0.0 • MIT License

@@ -1,0 +1,125 @@
+╔════════════════════════════════════════════════════════════════╗
+║                                                                ║
+║              📤 SIMPLE UPLOAD GUIDE FOR INFINITYFREE          ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║  STEP 1: BUILD THE PROJECT                                     ║
+║  ────────────────────────                                      ║
+║                                                                ║
+║  Open terminal in your project folder and run:                 ║
+║                                                                ║
+║    npm install                                                 ║
+║    npm run build                                               ║
+║                                                                ║
+║  ⏳ Wait for build to complete...                             ║
+║  ✅ A "dist" folder will appear!                              ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║  STEP 2: FIND THE DIST FOLDER                                  ║
+║  ──────────────────────────                                    ║
+║                                                                ║
+║  Location: C:\xampp\htdocs\Photobooth\dist\                   ║
+║                                                                ║
+║  Inside you'll see:                                            ║
+║    📄 index.html                                               ║
+║    📁 assets (folder with JS and CSS)                          ║
+║    🖼️ camera.svg                                              ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║  STEP 3: UPLOAD TO INFINITYFREE                                ║
+║  ────────────────────────────                                  ║
+║                                                                ║
+║  1. Login to InfinityFree control panel                        ║
+║  2. Open "File Manager"                                        ║
+║  3. Go to "htdocs" folder                                      ║
+║  4. Upload these 3 things FROM THE DIST FOLDER:                ║
+║                                                                ║
+║     ✅ index.html                                              ║
+║     ✅ assets folder (entire folder)                           ║
+║     ✅ camera.svg                                              ║
+║                                                                ║
+║  ⚠️ IMPORTANT: Upload the FILES INSIDE dist, not the folder   ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║  STEP 4: CREATE .htaccess FILE                                 ║
+║  ───────────────────────────                                   ║
+║                                                                ║
+║  In InfinityFree File Manager, create new file ".htaccess"     ║
+║  In the same folder as index.html, paste this:                 ║
+║                                                                ║
+║    RewriteEngine On                                            ║
+║    RewriteBase /                                               ║
+║    RewriteRule ^index\.html$ - [L]                             ║
+║    RewriteCond %{REQUEST_FILENAME} !-f                         ║
+║    RewriteCond %{REQUEST_FILENAME} !-d                         ║
+║    RewriteRule . /index.html [L]                               ║
+║                                                                ║
+║  Save the file.                                                ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║  STEP 5: TEST YOUR SITE                                        ║
+║  ────────────────────                                          ║
+║                                                                ║
+║  Visit: https://yoursite.infinityfreeapp.com                   ║
+║                                                                ║
+║  ✅ Page should load                                           ║
+║  ✅ Allow camera access when prompted                          ║
+║  ✅ Test creating a template                                   ║
+║  ✅ Test capturing photos                                      ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║  ❌ DO NOT UPLOAD THESE                                        ║
+║  ────────────────────────                                      ║
+║                                                                ║
+║  ❌ node_modules folder (huge, not needed)                     ║
+║  ❌ src folder (source code, not needed)                       ║
+║  ❌ package.json (config file, not needed)                     ║
+║  ❌ .md files (documentation, not needed)                      ║
+║  ❌ Any other files                                            ║
+║                                                                ║
+║  Only upload from dist folder!                                 ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║  📊 WHAT YOU'RE UPLOADING                                      ║
+║  ─────────────────────────                                     ║
+║                                                                ║
+║  Total size: Less than 2 MB                                    ║
+║  Total files: About 10-15 files                                ║
+║  Upload time: 1-5 minutes                                      ║
+║                                                                ║
+║  ✅ Fast and easy!                                             ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║  💡 QUICK TIPS                                                 ║
+║  ────────────                                                  ║
+║                                                                ║
+║  • Use HTTPS (not HTTP) for camera to work                     ║
+║  • Clear browser cache if changes don't show                   ║
+║  • Wait 5-10 minutes after upload for changes to appear        ║
+║  • Test on different browsers                                  ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║  🎯 SUMMARY                                                    ║
+║  ──────────                                                    ║
+║                                                                ║
+║  1. npm run build                                              ║
+║  2. Upload dist/index.html                                     ║
+║  3. Upload dist/assets/ folder                                 ║
+║  4. Upload dist/camera.svg                                     ║
+║  5. Create .htaccess                                           ║
+║  6. Visit your site!                                           ║
+║                                                                ║
+║  Done! 🎉                                                      ║
+║                                                                ║
+╚════════════════════════════════════════════════════════════════╝
+
+For detailed info, see DEPLOYMENT_FILES.md
