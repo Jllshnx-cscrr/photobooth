@@ -1,216 +1,382 @@
 /* ============================================
    CUSTOM STYLES FOR PHOTOBOOTH APP
-   Easy to edit - changes here won't be overwritten!
+   Professional Red to Maroon Business Theme
    After editing, run: npm run build
    ============================================ */
 
 /* ============================================
-   COLOR PALETTE
-   Change these to customize your theme
+   ELEGANT BUSINESS COLOR PALETTE
+   Sophisticated Red to Maroon Theme
    ============================================ */
 :root {
-  /* Primary Colors */
-  --primary-color: #3b82f6;      /* Blue */
-  --primary-hover: #2563eb;      /* Darker Blue */
-  --primary-light: #dbeafe;      /* Light Blue */
+  /* Primary Brand Colors - Red to Maroon */
+  --primary-color: #8B0000;           /* Dark Red (Maroon) */
+  --primary-hover: #A52A2A;           /* Brown-Red */
+  --primary-light: #DC143C;           /* Crimson */
+  --primary-lighter: #FFE4E1;         /* Misty Rose */
   
-  /* Secondary Colors */
-  --secondary-color: #8b5cf6;    /* Purple */
-  --secondary-hover: #7c3aed;    /* Darker Purple */
+  /* Secondary Accent Colors */
+  --secondary-color: #B22222;         /* Fire Brick */
+  --secondary-hover: #CD5C5C;         /* Indian Red */
+  --secondary-light: #F08080;         /* Light Coral */
   
-  /* Accent Colors */
-  --accent-color: #10b981;       /* Green */
-  --danger-color: #ef4444;       /* Red */
-  --warning-color: #f59e0b;      /* Orange */
+  /* Accent & Highlight */
+  --accent-gold: #D4AF37;             /* Gold */
+  --accent-rose-gold: #B76E79;        /* Rose Gold */
+  --accent-burgundy: #800020;         /* Burgundy */
   
-  /* Neutral Colors */
-  --bg-dark: #1f2937;            /* Dark Gray */
-  --bg-medium: #374151;          /* Medium Gray */
-  --bg-light: #f3f4f6;           /* Light Gray */
-  --text-dark: #111827;          /* Dark Text */
-  --text-light: #ffffff;         /* Light Text */
+  /* Neutral Professional Colors */
+  --bg-dark: #2C1810;                 /* Deep Brown */
+  --bg-medium: #4A2C2A;               /* Medium Brown */
+  --bg-light: #FFF5F5;                /* Off White */
+  --text-dark: #1a0a0a;               /* Almost Black */
+  --text-light: #ffffff;              /* Pure White */
+  --text-muted: #8B7D7B;              /* Taupe Gray */
   
-  /* Borders & Shadows */
-  --border-color: #d1d5db;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+  /* Elegant Borders & Shadows */
+  --border-color: #D4A5A5;            /* Soft Rose */
+  --shadow-sm: 0 2px 4px rgba(139, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(139, 0, 0, 0.15);
+  --shadow-lg: 0 10px 30px rgba(139, 0, 0, 0.2);
+  --shadow-xl: 0 20px 50px rgba(139, 0, 0, 0.25);
 }
 
 /* ============================================
-   BUTTONS
-   Customize button appearance
+   ELEGANT BUTTON STYLES
+   Professional business buttons
    ============================================ */
 
-/* Primary Buttons (Blue) */
+/* Primary Maroon Buttons */
 button.bg-blue-500,
 button.bg-blue-600,
+button.bg-purple-600,
+button.bg-purple-500,
 .btn-primary {
-  background-color: var(--primary-color) !important;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%) !important;
   color: var(--text-light);
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
+  padding: 0.75rem 2rem;
+  border-radius: 0.75rem;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  box-shadow: var(--shadow-md);
+  letter-spacing: 0.5px;
 }
 
 button.bg-blue-500:hover,
 button.bg-blue-600:hover,
+button.bg-purple-600:hover,
+button.bg-purple-500:hover,
 .btn-primary:hover {
-  background-color: var(--primary-hover) !important;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-light) 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent-gold);
 }
 
-/* Success Buttons (Green) */
+/* Success/Action Buttons - Gold Accent */
 button.bg-green-500,
 button.bg-green-600,
 .btn-success {
-  background-color: var(--accent-color) !important;
-  color: var(--text-light);
+  background: linear-gradient(135deg, var(--accent-gold) 0%, #B8860B 100%) !important;
+  color: var(--text-dark);
+  font-weight: 700;
 }
 
-/* Danger Buttons (Red) */
+/* Danger/Delete Buttons - Deep Red */
 button.bg-red-500,
 button.bg-red-600,
 .btn-danger {
-  background-color: var(--danger-color) !important;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-burgundy) 100%) !important;
   color: var(--text-light);
 }
 
-/* Purple Buttons */
-button.bg-purple-500,
-button.bg-purple-600,
-.btn-purple {
-  background-color: var(--secondary-color) !important;
+/* Secondary Buttons - Rose Gold */
+button.bg-gray-600,
+.btn-secondary {
+  background: linear-gradient(135deg, var(--accent-rose-gold) 0%, var(--secondary-color) 100%) !important;
   color: var(--text-light);
 }
-/* Welcome Screen Background */
 
-.welcome-screen {
-  background-image: url('/backgrounds/welcome-bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+/* White buttons with maroon text */
+button.bg-white {
+  background: white !important;
+  color: var(--primary-color) !important;
+  border: 2px solid var(--primary-color) !important;
+  font-weight: 700;
 }
 
-/* Add dark overlay for better text readability */
-.welcome-screen::before {
+button.bg-white:hover {
+  background: var(--primary-lighter) !important;
+  border-color: var(--primary-hover) !important;
+}
+/* ============================================
+   ELEGANT WELCOME SCREEN
+   Sophisticated business landing page
+   ============================================ */
+
+/* Professional gradient background */
+.welcome-screen,
+.min-h-screen.bg-gradient-to-br {
+  background: linear-gradient(135deg, 
+    var(--accent-burgundy) 0%, 
+    var(--primary-color) 25%, 
+    var(--primary-hover) 50%,
+    var(--secondary-color) 75%,
+    var(--primary-light) 100%) !important;
+  position: relative;
+}
+
+/* Elegant pattern overlay */
+.welcome-screen::after {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  pointer-events: none;
   z-index: 0;
 }
 
-/* Make sure content appears above overlay */
 .welcome-screen > * {
   position: relative;
   z-index: 1;
 }
 
-/* ============================================
-   CAMERA CAPTURE
-   Customize camera interface
-   ============================================ */
-.camera-container {
-  background-color: var(--bg-dark);
+/* Elegant typography */
+.welcome-screen h1 {
+  font-family: 'Georgia', 'Times New Roman', serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 2px !important;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
 }
 
-.countdown-timer {
-  font-size: 6rem;
-  font-weight: bold;
-  color: var(--text-light);
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+.welcome-screen p {
+  font-family: 'Arial', 'Helvetica', sans-serif !important;
+  letter-spacing: 1px !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Premium icon styling */
+.welcome-screen svg {
+  filter: drop-shadow(0 4px 8px rgba(139, 0, 0, 0.3));
+}
+
+.welcome-screen .inline-block {
+  background: linear-gradient(135deg, white 0%, var(--primary-lighter) 100%) !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+/* Timer selection - elegant cards */
+.welcome-screen .flex.gap-4 button {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 1rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.welcome-screen .flex.gap-4 button:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: var(--accent-gold) !important;
+  transform: translateY(-4px) scale(1.05) !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+/* Selected timer - gold accent */
+.welcome-screen button.scale-110,
+.welcome-screen button[class*="scale-105"] {
+  background: linear-gradient(135deg, white 0%, var(--accent-gold) 100%) !important;
+  color: var(--primary-color) !important;
+  border-color: var(--accent-gold) !important;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.5) !important;
+}
+
+/* ============================================
+   CAMERA CAPTURE - PROFESSIONAL INTERFACE
+   ============================================ */
+
+.min-h-screen.bg-black,
+.bg-gray-900 {
+  background: linear-gradient(135deg, #1a0000 0%, #2C1810 50%, #1a0000 100%) !important;
+}
+
+/* Elegant top bar */
+.bg-gray-800 {
+  background: linear-gradient(180deg, 
+    rgba(139, 0, 0, 0.95) 0%, 
+    rgba(44, 24, 16, 0.9) 100%) !important;
+  border-bottom: 2px solid var(--accent-gold);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Countdown styling - elegant */
+.text-9xl {
+  font-family: 'Georgia', serif !important;
+  color: white !important;
+  text-shadow: 
+    0 0 20px rgba(212, 175, 55, 0.8),
+    0 0 40px rgba(212, 175, 55, 0.4),
+    0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Progress bar - gold gradient */
+.bg-purple-500,
+.bg-gradient-to-r {
+  background: linear-gradient(90deg, 
+    var(--accent-burgundy) 0%,
+    var(--primary-color) 25%,
+    var(--primary-light) 75%,
+    var(--accent-gold) 100%) !important;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}
+
+/* Thumbnail styling - elegant borders */
+.border-green-500 {
+  border-color: var(--accent-gold) !important;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.4) !important;
+}
+
+.border-white\/30 {
+  border-color: rgba(139, 0, 0, 0.4) !important;
+  background: rgba(139, 0, 0, 0.2) !important;
+}
+
+/* ============================================
+   FINAL PREVIEW - PREMIUM PRESENTATION
+   ============================================ */
+
+.min-h-screen.bg-gradient-to-br.from-purple-600 {
+  background: linear-gradient(135deg,
+    var(--accent-burgundy) 0%,
+    var(--primary-color) 30%,
+    var(--primary-hover) 60%,
+    var(--secondary-color) 90%,
+    var(--primary-light) 100%) !important;
+}
+
+/* Premium title styling */
+div[class*="max-w-6xl"] h1 {
+  font-family: 'Georgia', serif !important;
+  letter-spacing: 3px !important;
+  text-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 4px 12px rgba(212, 175, 55, 0.3) !important;
+}
+
+/* Button row styling */
+.grid.grid-cols-1.md\\:grid-cols-5 button {
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  font-size: 0.75rem !important;
+}
+
+/* Yellow button - gold theme */
+button.bg-yellow-400 {
+  background: linear-gradient(135deg, var(--accent-gold) 0%, #B8860B 100%) !important;
+  color: var(--text-dark) !important;
+  border: 2px solid #B8860B !important;
+}
+
+button.bg-yellow-400:hover {
+  background: linear-gradient(135deg, #FFD700 0%, var(--accent-gold) 100%) !important;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.5) !important;
 }
 
 /* ============================================
    PHOTO SELECTION & EDITOR
-   Customize photo grid and editor
+   Professional gallery styling
    ============================================ */
+
 .photo-thumbnail {
-  border: 3px solid transparent;
-  border-radius: 0.5rem;
+  border: 3px solid var(--border-color);
+  border-radius: 0.75rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .photo-thumbnail:hover {
-  border-color: var(--primary-color);
+  border-color: var(--accent-gold);
   transform: scale(1.05);
   box-shadow: var(--shadow-lg);
 }
 
 .photo-thumbnail.selected {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+  transform: scale(1.05);
 }
 
 /* ============================================
-   TEMPLATE DESIGNER (ADMIN)
-   Customize admin interface
+   ADMIN DASHBOARD - ELEGANT BUSINESS THEME
    ============================================ */
+
+.bg-gray-100 {
+  background: linear-gradient(135deg, var(--bg-light) 0%, #FFF0F0 100%) !important;
+}
+
+.bg-white {
+  background: white !important;
+  border: 1px solid var(--border-color);
+}
+
 .admin-sidebar {
-  background-color: var(--bg-dark);
+  background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
   color: var(--text-light);
+  border-right: 3px solid var(--accent-gold);
 }
 
 .template-canvas {
-  border: 2px dashed var(--border-color);
+  border: 2px dashed var(--accent-rose-gold);
   background-color: white;
   background-image: 
-    linear-gradient(45deg, #f9fafb 25%, transparent 25%),
-    linear-gradient(-45deg, #f9fafb 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #f9fafb 75%),
-    linear-gradient(-45deg, transparent 75%, #f9fafb 75%);
+    linear-gradient(45deg, #FFF5F5 25%, transparent 25%),
+    linear-gradient(-45deg, #FFF5F5 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #FFF5F5 75%),
+    linear-gradient(-45deg, transparent 75%, #FFF5F5 75%);
   background-size: 20px 20px;
   background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
 }
 
 .photo-slot {
   border: 2px solid var(--primary-color);
-  background-color: rgba(59, 130, 246, 0.1);
+  background-color: rgba(139, 0, 0, 0.1);
   cursor: move;
+  transition: all 0.2s ease;
+}
+
+.photo-slot:hover {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
 }
 
 .photo-slot.selected {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+  background-color: rgba(212, 175, 55, 0.1);
 }
 
 /* ============================================
-   MODAL/DIALOG BOXES
-   Customize popups and dialogs
+   FORMS & INPUTS - ELEGANT STYLING
    ============================================ */
-.modal-overlay {
-  background-color: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
-}
 
-.modal-content {
-  background-color: white;
-  border-radius: 1rem;
-  box-shadow: var(--shadow-lg);
-  max-width: 50%;
-  max-height: 90vh;
-  overflow: auto;
-}
-
-/* ============================================
-   FORMS & INPUTS
-   Customize input fields
-   ============================================ */
 input[type="text"],
 input[type="number"],
 select,
 textarea {
-  border: 1px solid var(--border-color);
-  border-radius: 0.375rem;
-  padding: 0.5rem 0.75rem;
-  transition: all 0.2s ease;
+  border: 2px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 0.625rem 1rem;
+  transition: all 0.3s ease;
+  background: white;
+  color: var(--text-dark);
+  font-weight: 500;
 }
 
 input[type="text"]:focus,
@@ -219,270 +385,206 @@ select:focus,
 textarea:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 4px rgba(139, 0, 0, 0.1);
+  background: var(--primary-lighter);
 }
 
 /* ============================================
-   SCROLLBARS
-   Customize scrollbar appearance
+   MODAL/DIALOG BOXES - PREMIUM STYLE
    ============================================ */
+
+.modal-overlay {
+  background-color: rgba(44, 24, 16, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.modal-content {
+  background: linear-gradient(135deg, white 0%, var(--bg-light) 100%);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-xl);
+  border: 3px solid var(--accent-gold);
+  max-width: 50%;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+/* ============================================
+   SCROLLBARS - MAROON THEME
+   ============================================ */
+
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
   background: var(--bg-light);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--bg-medium);
-  border-radius: 5px;
+  background: linear-gradient(180deg, var(--primary-color) 0%, var(--accent-burgundy) 100%);
+  border-radius: 10px;
+  border: 2px solid var(--bg-light);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-color);
+  background: linear-gradient(180deg, var(--primary-hover) 0%, var(--primary-light) 100%);
 }
 
 /* ============================================
-   ANIMATIONS
-   Add smooth transitions and effects
+   ELEGANT ANIMATIONS
    ============================================ */
+
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+@keyframes glow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.8);
+  }
 }
 
 .fade-in {
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
-.pulse {
-  animation: pulse 2s infinite;
+.shimmer {
+  animation: shimmer 2s infinite;
+  background: linear-gradient(
+    90deg,
+    var(--primary-color) 0%,
+    var(--accent-gold) 50%,
+    var(--primary-color) 100%
+  );
+  background-size: 1000px 100%;
+}
+
+.glow {
+  animation: glow 2s ease-in-out infinite;
 }
 
 /* ============================================
-   RESPONSIVE DESIGN
-   Adjust styles for different screen sizes
+   RESPONSIVE DESIGN - PROFESSIONAL
    ============================================ */
+
 @media (max-width: 768px) {
   .modal-content {
     max-width: 95%;
+    border-width: 2px;
   }
   
   button {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
   }
+  
+  :root {
+    --shadow-lg: 0 8px 20px rgba(139, 0, 0, 0.15);
+  }
 }
 
 /* ============================================
-   YOUR CUSTOM STYLES
-   Add your own styles below this line
+   MAKE EVERYTHING SMALLER (Professional Compact)
    ============================================ */
 
-/* ============================================
-   BACKGROUND IMAGES
-   Add custom background images to any screen
-   ============================================ */
-
-/* Welcome Screen Background Image */
-.welcome-screen-bg {
-  background-image: url('/path/to/your-image.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-/* If image is in public folder, use: */
-/* background-image: url('/your-image.jpg'); */
-
-/* Add overlay to darken/lighten image */
-.welcome-screen-overlay {
-  background: rgba(0, 0, 0, 0.3); /* Dark overlay */
-  /* OR use rgba(255, 255, 255, 0.3) for light overlay */
-}
-
-/* Final Preview Background Image */
-.final-preview-bg-image {
-  background-image: url('/path/to/preview-bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-/* Camera Capture Background */
-.camera-bg-image {
-  background-image: url('/path/to/camera-bg.jpg');
-  background-size: cover;
-  background-position: center;
-}
-
-/* ============================================
-   YOUR CUSTOM STYLES
-   Add your own styles below this line
-   ============================================ */
-
-/* ============================================
-   BACKGROUND IMAGES - QUICK START
-   Uncomment and modify these examples
-   ============================================ */
-
-/* Example 1: Welcome Screen with Background Image
-.welcome-screen {
-  background-image: url('/backgrounds/welcome-bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-*/
-
-/* Example 2: Welcome Screen with Dark Overlay (Better for Text)
-.welcome-screen {
-  background-image: 
-    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url('/backgrounds/welcome-bg.jpg');
-  background-size: cover;
-  background-position: center;
-}
-*/
-
-/* Example 3: Final Preview Background
-.final-preview-bg {
-  background-image: 
-    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-    url('/backgrounds/preview-bg.jpg');
-  background-size: cover;
-  background-position: center;
-}
-*/
-
-/* HOW TO USE:
-   1. Add your image to: public/backgrounds/your-image.jpg
-   2. Uncomment one of the examples above (remove the comment marks)
-   3. Update the image filename if needed
-   4. Run: npm run build
-   5. See: BACKGROUND_IMAGE_GUIDE.md for more help
-*/
-
-/* Timer Selection Buttons on Welcome Screen */
-.timer-button {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.timer-button-selected {
-  animation: timer-select 0.3s ease-out;
-}
-
-@keyframes timer-select {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-  100% { transform: scale(1.1); }
-}
-
-.timer-button:hover {
-  filter: brightness(1.1);
-}
-
-/* Countdown number animation in camera */
-.countdown-number {
-  animation: countdown-pulse 1s ease-in-out;
-}
-
-@keyframes countdown-pulse {
-  0% { transform: scale(0.5); opacity: 0; }
-  50% { transform: scale(1.2); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-/* ============================================
-   MAKE EVERYTHING SMALLER
-   Reduce all sizes, fonts, padding, spacing
-   ============================================ */
-
-/* Welcome Screen - Make Everything Smaller */
+/* Welcome Screen - Compact but elegant */
 .welcome-screen h1 {
-  font-size: 2.5rem !important; /* Was 6xl/3.75rem */
+  font-size: 2.25rem !important;
   margin-bottom: 0.75rem !important;
 }
 
 .welcome-screen p {
-  font-size: 1rem !important; /* Was 2xl/1.5rem */
+  font-size: 0.95rem !important;
 }
 
 .welcome-screen .inline-block {
-  padding: 1rem !important; /* Camera icon circle */
+  padding: 1rem !important;
 }
 
 .welcome-screen svg {
-  width: 3rem !important; /* Was 24/6rem */
-  height: 3rem !important;
+  width: 2.75rem !important;
+  height: 2.75rem !important;
 }
 
-/* Start button smaller */
 .welcome-screen button[class*="rounded-full"] {
-  padding: 0.75rem 2rem !important; /* Was py-6 px-12 */
-  font-size: 1.125rem !important; /* Was 2xl */
+  padding: 0.875rem 2.5rem !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.5px !important;
 }
 
-/* Timer selection buttons smaller */
 .welcome-screen .flex.gap-4 button {
-  padding: 0.5rem 1.5rem !important; /* Was px-8 py-4 */
-  font-size: 0.875rem !important; /* Was text-lg */
+  padding: 0.625rem 1.75rem !important;
+  font-size: 0.875rem !important;
 }
 
 .welcome-screen h2 {
-  font-size: 1rem !important; /* Timer title smaller */
+  font-size: 0.95rem !important;
   margin-bottom: 0.75rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 1px !important;
 }
 
-/* Available layouts section smaller */
 .welcome-screen .grid img {
-  height: 4rem !important; /* Was h-32 */
+  height: 4rem !important;
 }
 
 .welcome-screen .grid p {
   font-size: 0.75rem !important;
+  font-weight: 600 !important;
 }
 
-/* Final Preview - Make Everything Smaller */
+/* Final Preview - Compact elegant */
 .min-h-screen.bg-gradient-to-br h1,
 div[class*="max-w-6xl"] h1 {
-  font-size: 2rem !important; /* Was 5xl */
+  font-size: 1.875rem !important;
   margin-bottom: 1rem !important;
+  font-family: 'Georgia', serif !important;
 }
 
 .min-h-screen.bg-gradient-to-br p,
 div[class*="max-w-6xl"] p {
-  font-size: 1rem !important; /* Was 2xl */
+  font-size: 0.95rem !important;
 }
 
-/* Preview buttons smaller */
 .min-h-screen.bg-gradient-to-br button,
 div[class*="max-w-6xl"] button {
-  padding: 0.5rem 1rem !important; /* Was px-6 py-4 */
-  font-size: 0.875rem !important;
+  padding: 0.625rem 1.25rem !important;
+  font-size: 0.8rem !important;
 }
 
 .min-h-screen.bg-gradient-to-br svg,
 div[class*="max-w-6xl"] svg {
-  width: 1.25rem !important; /* Icon sizes */
-  height: 1.25rem !important;
+  width: 1.125rem !important;
+  height: 1.125rem !important;
 }
 
-/* Preview image smaller */
 .min-h-screen.bg-gradient-to-br img {
-  max-height: 400px !important;
+  max-height: 450px !important;
 }
 
-/* Camera Capture - Make Everything Smaller */
+/* Camera - Compact professional */
 .bg-gray-800.text-white h1 {
-  font-size: 1.25rem !important; /* Was 2xl */
+  font-size: 1.125rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
 }
 
 .bg-gray-800.text-white p {
@@ -490,84 +592,152 @@ div[class*="max-w-6xl"] svg {
 }
 
 .bg-gray-800.text-white button {
-  padding: 0.375rem 0.75rem !important; /* Restart button */
-  font-size: 0.875rem !important;
+  padding: 0.5rem 1rem !important;
+  font-size: 0.8rem !important;
 }
 
-/* Countdown number smaller */
 .text-9xl {
-  font-size: 4rem !important; /* Was 9xl/8rem */
+  font-size: 5rem !important;
 }
 
-/* Photo counter smaller */
 .text-3xl {
-  font-size: 1.5rem !important; /* Was 3xl/1.875rem */
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
 }
 
-/* Photo Selection - Make Everything Smaller */
-.photo-grid h2 {
-  font-size: 1.25rem !important;
-}
-
-/* Photo Editor - Make Everything Smaller */
-.photo-editor h2 {
-  font-size: 1rem !important;
-}
-
-.photo-editor button {
-  padding: 0.375rem 0.75rem !important;
-  font-size: 0.75rem !important;
-}
-
-/* Reduce all general spacing */
+/* General compact spacing */
 .p-8 {
-  padding: 1.5rem !important;
+  padding: 1.75rem !important;
 }
 
 .p-6 {
-  padding: 1rem !important;
+  padding: 1.25rem !important;
 }
 
 .p-4 {
-  padding: 0.75rem !important;
+  padding: 0.875rem !important;
 }
 
 .mb-8 {
-  margin-bottom: 1.5rem !important;
+  margin-bottom: 1.75rem !important;
 }
 
 .mb-6 {
-  margin-bottom: 1rem !important;
+  margin-bottom: 1.25rem !important;
 }
 
 .mb-4 {
-  margin-bottom: 0.75rem !important;
+  margin-bottom: 0.875rem !important;
 }
 
 .gap-4 {
-  gap: 0.75rem !important;
+  gap: 0.875rem !important;
 }
 
-/* All buttons - general override */
 button {
-  padding: 0.5rem 1rem !important;
-  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px !important;
 }
 
-/* All headings smaller */
 h1 {
-  font-size: 1.875rem !important;
+  font-family: 'Georgia', serif !important;
+  letter-spacing: 1px !important;
 }
 
-h2 {
-  font-size: 1.5rem !important;
+h2, h3 {
+  font-family: 'Arial', sans-serif !important;
+  letter-spacing: 0.5px !important;
 }
 
-h3 {
-  font-size: 1.25rem !important;
+/* ============================================
+   PREMIUM TOUCHES
+   ============================================ */
+
+/* Glass morphism effect for overlays */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* All paragraphs smaller */
-p {
-  font-size: 0.875rem !important;
+/* Elegant hover effects */
+.elegant-hover {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+.elegant-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Gold accent elements */
+.gold-accent {
+  border-left: 4px solid var(--accent-gold);
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.05) 0%, transparent 100%);
+}
+
+/* Professional text shadows */
+.text-elegant {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.5px;
+}
+
+/* ============================================
+   TIMER BUTTONS & SELECTION
+   ============================================ */
+
+.timer-button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+}
+
+.timer-button-selected {
+  animation: timer-select 0.3s ease-out;
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.6) !important;
+}
+
+@keyframes timer-select {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+  100% { transform: scale(1.08); }
+}
+
+.timer-button:hover {
+  filter: brightness(1.15);
+  transform: translateY(-2px);
+}
+
+/* Countdown animation */
+.countdown-number {
+  animation: countdown-pulse 1s ease-in-out;
+}
+
+@keyframes countdown-pulse {
+  0% { 
+    transform: scale(0.5); 
+    opacity: 0; 
+  }
+  50% { 
+    transform: scale(1.15); 
+    opacity: 1; 
+  }
+  100% { 
+    transform: scale(1); 
+    opacity: 1; 
+  }
+}
+
+/* ============================================
+   BACKGROUND PATTERNS (Optional Enhancement)
+   ============================================ */
+
+.elegant-pattern {
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(139, 0, 0, 0.05) 0%, transparent 50%);
+}
+
+/* ============================================
+   YOUR CUSTOM STYLES
+   Add additional custom styles below
+   ============================================ */

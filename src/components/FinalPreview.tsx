@@ -160,10 +160,10 @@ export const FinalPreview: React.FC = () => {
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Error</h2>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
-            onClick={() => goToStep('editor')}
+            onClick={() => goToStep('capture')}
             className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
           >
-            Back to Editor
+            Restart Session
           </button>
         </div>
       </div>
@@ -197,13 +197,7 @@ export const FinalPreview: React.FC = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <button
-            onClick={() => goToStep('editor')}
-            className="bg-white bg-opacity-20 backdrop-blur-sm text-white px-6 py-4 rounded-lg font-semibold hover:bg-opacity-30 transition-all"
-          >
-            ← Back to Editor
-          </button>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <button
             onClick={handleDownload}
             className="bg-blue-500 text-white px-6 py-4 rounded-lg font-bold hover:bg-blue-600 transition-all shadow-lg flex items-center justify-center gap-2"

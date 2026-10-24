@@ -29,36 +29,26 @@ export const PhotoEditor: React.FC = () => {
       setSelectedTemplate(defaultTemplate);
       setTemplateId(defaultTemplate.id);
       
-      // Auto-assign photos to slots
-      const slots = defaultTemplate.photoSlots;
+      // Get only PRIMARY slots (those without sourceSlotId)
+      const primarySlots = defaultTemplate.photoSlots.filter(s => !s.sourceSlotId).sort((a, b) => a.y - b.y);
       
-      // Check if this is a dual strip layout (slots with Left/Right naming)
-      const hasLeftRightSlots = slots.some(s => s.name.includes('(Left)') || s.name.includes('(Right)'));
+      // Assign photos to primary slots
+      primarySlots.forEach((slot, index) => {
+        if (selectedPhotos[index]) {
+          assignPhotoToSlot(slot.id, selectedPhotos[index].id);
+        }
+      });
       
-      if (hasLeftRightSlots) {
-        // Dual strip: assign same photos to left and right
-        const leftSlots = slots.filter(s => s.name.includes('(Left)')).sort((a, b) => a.y - b.y);
-        const rightSlots = slots.filter(s => s.name.includes('(Right)')).sort((a, b) => a.y - b.y);
-        
-        leftSlots.forEach((slot, index) => {
-          if (selectedPhotos[index]) {
-            assignPhotoToSlot(slot.id, selectedPhotos[index].id);
+      // Assign photos to MIRROR slots (same photos as their source slots)
+      const mirrorSlots = defaultTemplate.photoSlots.filter(s => s.sourceSlotId);
+      mirrorSlots.forEach((mirrorSlot) => {
+        if (mirrorSlot.sourceSlotId) {
+          const sourcePrimaryIndex = primarySlots.findIndex(s => s.id === mirrorSlot.sourceSlotId);
+          if (sourcePrimaryIndex !== -1 && selectedPhotos[sourcePrimaryIndex]) {
+            assignPhotoToSlot(mirrorSlot.id, selectedPhotos[sourcePrimaryIndex].id);
           }
-        });
-        
-        rightSlots.forEach((slot, index) => {
-          if (selectedPhotos[index]) {
-            assignPhotoToSlot(slot.id, selectedPhotos[index].id);
-          }
-        });
-      } else {
-        // Regular layout: assign to first 4 slots
-        slots.slice(0, 4).forEach((slot, index) => {
-          if (selectedPhotos[index]) {
-            assignPhotoToSlot(slot.id, selectedPhotos[index].id);
-          }
-        });
-      }
+        }
+      });
     }
   }, [templates, selectedTemplate, selectedPhotos, setTemplateId, assignPhotoToSlot]);
 
@@ -87,39 +77,28 @@ export const PhotoEditor: React.FC = () => {
     setSelectedTemplate(template);
     setTemplateId(template.id);
     
-    // Check if this is a dual strip layout
-    const hasLeftRightSlots = template.photoSlots.some(s => 
-      s.name.includes('(Left)') || s.name.includes('(Right)')
-    );
+    // Get only PRIMARY slots (those without sourceSlotId)
+    const primarySlots = template.photoSlots
+      .filter(s => !s.sourceSlotId)
+      .sort((a, b) => a.y - b.y);
     
-    if (hasLeftRightSlots) {
-      // Dual strip: assign same photos to left and right
-      const leftSlots = template.photoSlots
-        .filter(s => s.name.includes('(Left)'))
-        .sort((a, b) => a.y - b.y);
-      const rightSlots = template.photoSlots
-        .filter(s => s.name.includes('(Right)'))
-        .sort((a, b) => a.y - b.y);
-      
-      leftSlots.forEach((slot, index) => {
-        if (selectedPhotos[index]) {
-          assignPhotoToSlot(slot.id, selectedPhotos[index].id);
+    // Assign photos to primary slots
+    primarySlots.forEach((slot, index) => {
+      if (selectedPhotos[index]) {
+        assignPhotoToSlot(slot.id, selectedPhotos[index].id);
+      }
+    });
+    
+    // Assign photos to MIRROR slots (same photos as their source slots)
+    const mirrorSlots = template.photoSlots.filter(s => s.sourceSlotId);
+    mirrorSlots.forEach((mirrorSlot) => {
+      if (mirrorSlot.sourceSlotId) {
+        const sourcePrimaryIndex = primarySlots.findIndex(s => s.id === mirrorSlot.sourceSlotId);
+        if (sourcePrimaryIndex !== -1 && selectedPhotos[sourcePrimaryIndex]) {
+          assignPhotoToSlot(mirrorSlot.id, selectedPhotos[sourcePrimaryIndex].id);
         }
-      });
-      
-      rightSlots.forEach((slot, index) => {
-        if (selectedPhotos[index]) {
-          assignPhotoToSlot(slot.id, selectedPhotos[index].id);
-        }
-      });
-    } else {
-      // Regular layout: assign to first 4 slots
-      template.photoSlots.slice(0, 4).forEach((slot, index) => {
-        if (selectedPhotos[index]) {
-          assignPhotoToSlot(slot.id, selectedPhotos[index].id);
-        }
-      });
-    }
+      }
+    });
   };
 
   const handleContinue = () => {

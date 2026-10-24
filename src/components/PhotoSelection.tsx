@@ -1,13 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSession } from '../contexts/SessionContext';
-
-const PHOTOS_TO_SELECT = 4;
+import { useTemplates } from '../contexts/TemplateContext';
 
 export const PhotoSelection: React.FC = () => {
-  const { session, setSelectedPhotos, goToStep } = useSession();
+  const { session, setSelectedPhotos, assignPhotoToSlot, setTemplateId, goToStep } = useSession();
+  const { templates } = useTemplates();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   if (!session) return null;
+
+  // Get active template to determine how many photos to select
+  const activeTemplate = templates.find(t => t.isDefault);
+  
+  // Determine photos to select:
+  // 1. If uniquePhotosNeeded is set (dual strip), use that
+  // 2. Otherwise count only PRIMARY slots (exclude mirror slots that have sourceSlotId)
+  const primarySlotCount = activeTemplate 
+    ? activeTemplate.photoSlots.filter(slot => !slot.sourceSlotId).length 
+    : 4;
+  
+  const PHOTOS_TO_SELECT = activeTemplate?.uniquePhotosNeeded || primarySlotCount;
+
+  // Auto-select all photos if captured count matches slot count (exact mode)
+  useEffect(() => {
+    if (activeTemplate?.captureMode === 'exact' && session.capturedPhotos.length === PHOTOS_TO_SELECT) {
+      // Automatically select all photos
+      const allPhotoIds = session.capturedPhotos.map(p => p.id);
+      setSelectedPhotos(allPhotoIds);
+      
+      // Set template ID
+      setTemplateId(activeTemplate.id);
+      
+      // Auto-assign photos to PRIMARY slots
+      const primarySlots = activeTemplate.photoSlots
+        .filter(s => !s.sourceSlotId)
+        .sort((a, b) => a.y - b.y);
+      
+      primarySlots.forEach((slot, index) => {
+        if (session.capturedPhotos[index]) {
+          assignPhotoToSlot(slot.id, session.capturedPhotos[index].id);
+        }
+      });
+      
+      // Auto-assign photos to MIRROR slots (same photos as their source slots)
+      const mirrorSlots = activeTemplate.photoSlots.filter(s => s.sourceSlotId);
+      mirrorSlots.forEach((mirrorSlot) => {
+        if (mirrorSlot.sourceSlotId) {
+          const sourcePrimaryIndex = primarySlots.findIndex(s => s.id === mirrorSlot.sourceSlotId);
+          if (sourcePrimaryIndex !== -1 && session.capturedPhotos[sourcePrimaryIndex]) {
+            assignPhotoToSlot(mirrorSlot.id, session.capturedPhotos[sourcePrimaryIndex].id);
+          }
+        }
+      });
+      
+      // Skip editor and go directly to preview
+      goToStep('preview');
+    }
+  }, [activeTemplate, session.capturedPhotos, PHOTOS_TO_SELECT, setSelectedPhotos, setTemplateId, assignPhotoToSlot, goToStep]);
 
   const toggleSelection = (photoId: string) => {
     if (selectedIds.includes(photoId)) {
@@ -21,31 +70,62 @@ export const PhotoSelection: React.FC = () => {
 
   const handleContinue = () => {
     setSelectedPhotos(selectedIds);
-    goToStep('editor');
+    
+    // Set template ID and auto-assign photos
+    if (activeTemplate) {
+      setTemplateId(activeTemplate.id);
+      
+      // Get PRIMARY slots only (exclude mirrors)
+      const primarySlots = activeTemplate.photoSlots
+        .filter(s => !s.sourceSlotId)
+        .sort((a, b) => a.y - b.y);
+      
+      // Auto-assign selected photos to primary slots
+      const selectedPhotos = session.capturedPhotos.filter(p => selectedIds.includes(p.id));
+      primarySlots.forEach((slot, index) => {
+        if (selectedPhotos[index]) {
+          assignPhotoToSlot(slot.id, selectedPhotos[index].id);
+        }
+      });
+      
+      // Auto-assign photos to MIRROR slots (same photos as their source slots)
+      const mirrorSlots = activeTemplate.photoSlots.filter(s => s.sourceSlotId);
+      mirrorSlots.forEach((mirrorSlot) => {
+        if (mirrorSlot.sourceSlotId) {
+          const sourcePrimaryIndex = primarySlots.findIndex(s => s.id === mirrorSlot.sourceSlotId);
+          if (sourcePrimaryIndex !== -1 && selectedPhotos[sourcePrimaryIndex]) {
+            assignPhotoToSlot(mirrorSlot.id, selectedPhotos[sourcePrimaryIndex].id);
+          }
+        }
+      });
+    }
+    
+    // Skip editor and go directly to preview
+    goToStep('preview');
   };
 
   const canContinue = selectedIds.length === PHOTOS_TO_SELECT;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 p-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-white mb-4 drop-shadow-lg">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 p-4 flex items-center">
+      <div className="max-w-7xl mx-auto w-full">
+        {/* Header - Compact */}
+        <div className="text-center mb-4">
+          <h1 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
             Choose Your Favorites
           </h1>
-          <p className="text-2xl text-white opacity-90 drop-shadow">
+          <p className="text-sm text-white opacity-90 drop-shadow mb-2">
             Select exactly {PHOTOS_TO_SELECT} photos for your layout
           </p>
-          <div className="mt-4 inline-block bg-white bg-opacity-20 backdrop-blur-sm rounded-full px-8 py-3">
-            <span className="text-3xl font-bold text-white">
+          <div className="inline-block bg-white bg-opacity-20 backdrop-blur-sm rounded-full px-4 py-1.5">
+            <span className="text-lg font-bold text-white">
               {selectedIds.length} OF {PHOTOS_TO_SELECT} SELECTED
             </span>
           </div>
         </div>
 
-        {/* Photo Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+        {/* Photo Grid - Smaller and Compact */}
+        <div className="grid grid-cols-4 gap-3 mb-4">
           {session.capturedPhotos.map((photo, index) => {
             const isSelected = selectedIds.includes(photo.id);
             const selectionOrder = selectedIds.indexOf(photo.id) + 1;
@@ -55,11 +135,11 @@ export const PhotoSelection: React.FC = () => {
                 key={photo.id}
                 onClick={() => toggleSelection(photo.id)}
                 className={`
-                  relative aspect-square rounded-xl overflow-hidden cursor-pointer
+                  relative aspect-square rounded-lg overflow-hidden cursor-pointer
                   transform transition-all duration-200 hover:scale-105
                   ${isSelected 
-                    ? 'ring-8 ring-yellow-400 shadow-2xl scale-105' 
-                    : 'ring-4 ring-white ring-opacity-50 hover:ring-opacity-100'
+                    ? 'ring-4 ring-yellow-400 shadow-xl scale-105' 
+                    : 'ring-2 ring-white ring-opacity-50 hover:ring-opacity-100'
                   }
                 `}
               >
@@ -69,22 +149,22 @@ export const PhotoSelection: React.FC = () => {
                   className="w-full h-full object-cover"
                 />
 
-                {/* Selection Indicator */}
+                {/* Selection Indicator - Smaller */}
                 {isSelected && (
                   <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-                    <div className="bg-yellow-400 rounded-full w-20 h-20 flex items-center justify-center">
-                      <span className="text-4xl font-bold text-gray-900">
+                    <div className="bg-yellow-400 rounded-full w-12 h-12 flex items-center justify-center">
+                      <span className="text-2xl font-bold text-gray-900">
                         {selectionOrder}
                       </span>
                     </div>
                   </div>
                 )}
 
-                {/* Checkmark */}
+                {/* Checkmark - Smaller */}
                 {isSelected && (
-                  <div className="absolute top-4 right-4 bg-green-500 rounded-full p-2">
+                  <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1">
                     <svg
-                      className="w-8 h-8 text-white"
+                      className="w-4 h-4 text-white"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -99,20 +179,20 @@ export const PhotoSelection: React.FC = () => {
                   </div>
                 )}
 
-                {/* Photo Number */}
-                <div className="absolute top-4 left-4 bg-black bg-opacity-60 rounded-full w-10 h-10 flex items-center justify-center">
-                  <span className="text-white font-bold">{index + 1}</span>
+                {/* Photo Number - Smaller */}
+                <div className="absolute top-2 left-2 bg-black bg-opacity-60 rounded-full w-6 h-6 flex items-center justify-center">
+                  <span className="text-white font-bold text-xs">{index + 1}</span>
                 </div>
               </div>
             );
           })}
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex justify-center gap-4">
+        {/* Action Buttons - Compact */}
+        <div className="flex justify-center gap-3">
           <button
             onClick={() => goToStep('capture')}
-            className="bg-white bg-opacity-20 backdrop-blur-sm text-white px-8 py-4 rounded-full text-xl font-semibold hover:bg-opacity-30 transition-all"
+            className="bg-white bg-opacity-20 backdrop-blur-sm text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-opacity-30 transition-all"
           >
             ← Back to Camera
           </button>
@@ -120,20 +200,20 @@ export const PhotoSelection: React.FC = () => {
             onClick={handleContinue}
             disabled={!canContinue}
             className={`
-              px-12 py-4 rounded-full text-xl font-bold transition-all
+              px-8 py-2.5 rounded-full text-sm font-bold transition-all
               ${canContinue
-                ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300 hover:scale-105 shadow-2xl'
+                ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300 hover:scale-105 shadow-xl'
                 : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-50'
               }
             `}
           >
-            CUSTOMIZE MY PHOTOS →
+            PREVIEW FINAL IMAGE →
           </button>
         </div>
 
-        {/* Instruction */}
+        {/* Instruction - Compact */}
         {!canContinue && (
-          <p className="text-center text-white text-lg mt-4 opacity-75">
+          <p className="text-center text-white text-sm mt-3 opacity-75">
             {selectedIds.length < PHOTOS_TO_SELECT
               ? `Select ${PHOTOS_TO_SELECT - selectedIds.length} more photo${PHOTOS_TO_SELECT - selectedIds.length !== 1 ? 's' : ''}`
               : 'Click Continue to proceed'}

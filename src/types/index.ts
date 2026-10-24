@@ -9,6 +9,7 @@ export interface PhotoSlot {
   cornerRadius: number;
   zIndex: number;
   name: string;
+  sourceSlotId?: string;  // If set, this slot uses the photo from another slot (for dual strip mirroring)
 }
 
 export interface Template {
@@ -24,6 +25,8 @@ export interface Template {
   enabled: boolean;
   isDefault: boolean;
   allowUserCustomization: boolean;
+  captureMode: 'exact' | 'extra';  // 'exact' = capture only slot count, 'extra' = always capture 8
+  uniquePhotosNeeded?: number;  // For dual strips: 8 slots but only 4 unique photos needed
   createdAt: number;
   updatedAt: number;
 }
@@ -69,7 +72,6 @@ export type SessionStep =
   | 'welcome'
   | 'capture'
   | 'selection'
-  | 'editor'
   | 'preview';
 
 export interface CameraConfig {

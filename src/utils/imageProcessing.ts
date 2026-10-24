@@ -145,7 +145,15 @@ export const composeFinalImage = async (
     // Draw photos in slots
     assignments.forEach((assignment) => {
       const slot = template.photoSlots.find((s) => s.id === assignment.slotId);
-      const photo = photos.find((p) => p.id === assignment.photoId);
+      
+      // If this slot is a mirror (has sourceSlotId), find the photo from the source slot
+      let photo: CapturedPhoto | undefined;
+      if (slot?.sourceSlotId) {
+        const sourceAssignment = assignments.find((a) => a.slotId === slot.sourceSlotId);
+        photo = sourceAssignment ? photos.find((p) => p.id === sourceAssignment.photoId) : undefined;
+      } else {
+        photo = photos.find((p) => p.id === assignment.photoId);
+      }
 
       if (!slot || !photo) {
         checkComplete();

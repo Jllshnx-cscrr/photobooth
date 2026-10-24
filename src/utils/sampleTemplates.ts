@@ -65,6 +65,7 @@ export const createDefaultTemplate = (): Template => {
     enabled: true,
     isDefault: true,
     allowUserCustomization: true,
+    captureMode: 'exact',  // Default to exact mode (4 photos)
     createdAt: Date.now(),
     updatedAt: Date.now()
   };
@@ -134,6 +135,7 @@ export const createGridTemplate = (): Template => {
     enabled: true,
     isDefault: false,
     allowUserCustomization: true,
+    captureMode: 'exact',  // Default to exact mode (4 photos)
     createdAt: Date.now(),
     updatedAt: Date.now()
   };
@@ -203,6 +205,7 @@ export const createCollageTemplate = (): Template => {
     enabled: true,
     isDefault: false,
     allowUserCustomization: true,
+    captureMode: 'exact',  // Default to exact mode (4 photos)
     createdAt: Date.now(),
     updatedAt: Date.now()
   };

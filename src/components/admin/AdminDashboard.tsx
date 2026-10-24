@@ -270,26 +270,29 @@ export const AdminDashboard: React.FC = () => {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleToggleEnabled(template)}
+                      onClick={() => handleSetDefault(template)}
                       className={`flex-1 px-2 py-1.5 text-xs rounded font-medium ${
-                        template.enabled
-                          ? 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-                          : 'bg-green-500 text-white hover:bg-green-600'
+                        template.isDefault
+                          ? 'bg-green-500 text-white cursor-default'
+                          : 'bg-yellow-400 text-gray-900 hover:bg-yellow-500'
                       }`}
+                      disabled={template.isDefault}
                     >
-                      {template.enabled ? 'Disable' : 'Enable'}
+                      {template.isDefault ? '✓ Active' : 'Set Active'}
                     </button>
                   </div>
 
                   <div className="flex gap-1.5 mt-1.5">
-                    {!template.isDefault && (
-                      <button
-                        onClick={() => handleSetDefault(template)}
-                        className="flex-1 px-2 py-1.5 text-xs bg-yellow-400 text-gray-900 rounded hover:bg-yellow-500 font-medium"
-                      >
-                        Set Default
-                      </button>
-                    )}
+                    <button
+                      onClick={() => handleToggleEnabled(template)}
+                      className={`flex-1 px-2 py-1.5 text-xs rounded font-medium ${
+                        template.enabled
+                          ? 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+                          : 'bg-orange-500 text-white hover:bg-orange-600'
+                      }`}
+                    >
+                      {template.enabled ? 'Disable' : 'Enable'}
+                    </button>
                     <button
                       onClick={() => handleDelete(template.id)}
                       className="flex-1 px-2 py-1.5 text-xs bg-red-500 text-white rounded hover:bg-red-600 font-medium"
@@ -304,15 +307,30 @@ export const AdminDashboard: React.FC = () => {
         )}
 
         {/* Instructions */}
-        <div className="mt-6 bg-blue-50 rounded-lg p-4">
+        <div className="mt-6 bg-blue-50 rounded-lg p-4 border-l-4 border-blue-500">
+          <h2 className="text-base font-bold text-gray-800 mb-2">📌 Active Template System</h2>
+          <div className="text-sm text-gray-700 space-y-2">
+            <p className="font-semibold">How it works:</p>
+            <ul className="list-disc list-inside space-y-1 ml-2">
+              <li><strong>One Active Template:</strong> Only ONE template can be active at a time</li>
+              <li><strong>Click "Set Active":</strong> Makes that template the default for all sessions</li>
+              <li><strong>Active template badge:</strong> Shows green "✓ Active" button</li>
+              <li><strong>Users see active template:</strong> All photo sessions use the active template automatically</li>
+            </ul>
+            <p className="text-xs text-gray-600 mt-3 italic">
+              💡 Tip: Change the active template anytime to switch layouts for upcoming sessions
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-4 bg-green-50 rounded-lg p-4 border-l-4 border-green-500">
           <h2 className="text-base font-bold text-gray-800 mb-2">Getting Started</h2>
           <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
             <li>Click "Create New Template" to start designing</li>
             <li>Upload a background image (PNG with transparency recommended)</li>
             <li>Add photo slots by clicking "+ Add Photo Slot"</li>
             <li>Drag and resize slots to position them on your design</li>
-            <li>Optionally upload a foreground image to overlay on top of photos</li>
-            <li>Save your template and enable it for users</li>
+            <li>Save your template and click "Set Active" to use it</li>
           </ol>
         </div>
       </div>

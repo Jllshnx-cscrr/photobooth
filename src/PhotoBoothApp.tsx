@@ -3,7 +3,6 @@ import { useSession } from './contexts/SessionContext';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { CameraCapture } from './components/CameraCapture';
 import { PhotoSelection } from './components/PhotoSelection';
-import { PhotoEditor } from './components/PhotoEditor';
 import { FinalPreview } from './components/FinalPreview';
 
 export const PhotoBoothApp: React.FC = () => {
@@ -38,7 +37,6 @@ export const PhotoBoothApp: React.FC = () => {
       {currentStep === 'welcome' && <WelcomeScreen />}
       {currentStep === 'capture' && <CameraCapture />}
       {currentStep === 'selection' && <PhotoSelection />}
-      {currentStep === 'editor' && <PhotoEditor />}
       {currentStep === 'preview' && <FinalPreview />}
     </div>
   );

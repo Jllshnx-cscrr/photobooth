@@ -24,6 +24,7 @@ export const TemplateDesigner: React.FC<TemplateDesignerProps> = ({
       enabled: true,
       isDefault: false,
       allowUserCustomization: true,
+      captureMode: 'extra',  // Default to always capture 8 photos
       createdAt: Date.now(),
       updatedAt: Date.now()
     }
@@ -156,7 +157,7 @@ export const TemplateDesigner: React.FC<TemplateDesignerProps> = ({
   };
 
   const createDualStripLayout = () => {
-    if (!window.confirm('This will replace all current slots with a dual photo strip layout (4 photos on left, 4 on right). Continue?')) {
+    if (!window.confirm('This will replace all current slots with a dual photo strip layout (4 unique photos mirrored on both sides). Continue?')) {
       return;
     }
 
@@ -171,10 +172,11 @@ export const TemplateDesigner: React.FC<TemplateDesignerProps> = ({
 
     const newSlots: PhotoSlot[] = [];
     
-    // Create 4 slots on the left
+    // Create 4 PRIMARY slots on the left (these capture the actual photos)
     for (let i = 0; i < 4; i++) {
+      const slotId = `slot-primary-${i + 1}`;
       newSlots.push({
-        id: `slot-left-${i + 1}`,
+        id: slotId,
         x: margin,
         y: margin + i * (slotHeight + margin * 0.5),
         width: slotWidth,
@@ -183,14 +185,14 @@ export const TemplateDesigner: React.FC<TemplateDesignerProps> = ({
         fit: 'cover',
         cornerRadius: 0,
         zIndex: i,
-        name: `Photo ${i + 1} (Left)`
+        name: `Photo ${i + 1}`
       });
     }
     
-    // Create 4 slots on the right (duplicates)
+    // Create 4 MIRROR slots on the right (these reference the left slots)
     for (let i = 0; i < 4; i++) {
       newSlots.push({
-        id: `slot-right-${i + 1}`,
+        id: `slot-mirror-${i + 1}`,
         x: margin + slotWidth + gapBetween,
         y: margin + i * (slotHeight + margin * 0.5),
         width: slotWidth,
@@ -199,13 +201,16 @@ export const TemplateDesigner: React.FC<TemplateDesignerProps> = ({
         fit: 'cover',
         cornerRadius: 0,
         zIndex: i + 4,
-        name: `Photo ${i + 1} (Right)`
+        name: `Photo ${i + 1} (Mirror)`,
+        sourceSlotId: `slot-primary-${i + 1}`  // Link to the primary slot
       });
     }
 
     setCurrentTemplate({
       ...currentTemplate,
       photoSlots: newSlots,
+      captureMode: 'exact',  // Automatically set to exact mode
+      uniquePhotosNeeded: 4,  // Only 4 unique photos needed (mirrored to create 8 slots)
       updatedAt: Date.now()
     });
   };
@@ -474,6 +479,29 @@ export const TemplateDesigner: React.FC<TemplateDesignerProps> = ({
             >
               🎞️ Create Dual Strip (2×4)
             </button>
+
+            {/* Capture Mode Setting */}
+            <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded">
+              <label className="block text-xs font-semibold mb-1.5 text-gray-800">
+                📸 Photo Capture Mode
+              </label>
+              <select
+                value={currentTemplate.captureMode || 'extra'}
+                onChange={(e) => setCurrentTemplate({ 
+                  ...currentTemplate, 
+                  captureMode: e.target.value as 'exact' | 'extra'
+                })}
+                className="w-full border rounded px-2 py-1.5 text-xs bg-white"
+              >
+                <option value="exact">Exact Match - Capture {currentTemplate.photoSlots.length} photo{currentTemplate.photoSlots.length !== 1 ? 's' : ''}</option>
+                <option value="extra">Extra Photos - Always capture 8</option>
+              </select>
+              <p className="text-xs text-gray-600 mt-1.5">
+                {currentTemplate.captureMode === 'exact' || !currentTemplate.captureMode
+                  ? `📷 Will capture ${currentTemplate.photoSlots.length} photo${currentTemplate.photoSlots.length !== 1 ? 's' : ''} (exact slot count)`
+                  : '📷 Will capture 8 photos (user selects best ones)'}
+              </p>
+            </div>
 
             <div className="space-y-1.5">
               {currentTemplate.photoSlots.map((slot) => (

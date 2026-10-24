@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useSession } from '../contexts/SessionContext';
-
-const PHOTOS_TO_CAPTURE = 8;
+import { useTemplates } from '../contexts/TemplateContext';
 
 export const CameraCapture: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -10,6 +9,24 @@ export const CameraCapture: React.FC = () => {
   const timerRef = useRef<number | null>(null);
 
   const { session, addCapturedPhoto, goToStep, countdownSeconds } = useSession();
+  const { templates } = useTemplates();
+
+  // Get active template to determine how many photos to capture
+  const activeTemplate = templates.find(t => t.isDefault);
+  
+  // Determine photos to capture:
+  // 1. If uniquePhotosNeeded is set (dual strip), use that
+  // 2. Otherwise count only PRIMARY slots (exclude mirror slots that have sourceSlotId)
+  // 3. Apply captureMode setting
+  const primarySlotCount = activeTemplate 
+    ? activeTemplate.photoSlots.filter(slot => !slot.sourceSlotId).length 
+    : 4;
+  
+  const PHOTOS_TO_CAPTURE = activeTemplate 
+    ? (activeTemplate.captureMode === 'exact' 
+        ? (activeTemplate.uniquePhotosNeeded || primarySlotCount) 
+        : 8)
+    : 8; // Default to 8 if no active template
 
   const [countdown, setCountdown] = useState<number>(countdownSeconds);
   const [isCapturing, setIsCapturing] = useState(false);
