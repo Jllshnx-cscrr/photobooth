@@ -124,7 +124,7 @@ export const CameraCapture: React.FC = () => {
         clearTimeout(timerRef.current);
       }
     };
-  }, [countdown, isCapturing, cameraReady, capturedCount, capturePhoto]);
+  }, [countdown, isCapturing, cameraReady, capturedCount, capturePhoto, PHOTOS_TO_CAPTURE]);
 
   // Start capture sequence when camera is ready
   useEffect(() => {
@@ -132,37 +132,7 @@ export const CameraCapture: React.FC = () => {
       setIsCapturing(true);
       setCountdown(countdownSeconds);
     }
-  }, [cameraReady, isCapturing, capturedCount, countdownSeconds]);
-
-  // Countdown timer
-  useEffect(() => {
-    if (!isCapturing || !cameraReady || capturedCount >= PHOTOS_TO_CAPTURE) {
-      return;
-    }
-
-    if (countdown === 0) {
-      capturePhoto();
-      return;
-    }
-
-    timerRef.current = setTimeout(() => {
-      setCountdown((prev) => prev - 1);
-    }, 1000);
-
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
-  }, [countdown, isCapturing, cameraReady, capturedCount, capturePhoto]);
-
-  // Start capture sequence when camera is ready
-  useEffect(() => {
-    if (cameraReady && !isCapturing && capturedCount < PHOTOS_TO_CAPTURE) {
-      setIsCapturing(true);
-      setCountdown(countdownSeconds);
-    }
-  }, [cameraReady, isCapturing, capturedCount, countdownSeconds]);
+  }, [cameraReady, isCapturing, capturedCount, countdownSeconds, PHOTOS_TO_CAPTURE]);
 
   // Initialize camera on mount
   useEffect(() => {
