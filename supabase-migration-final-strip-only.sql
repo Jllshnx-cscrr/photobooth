@@ -27,11 +27,10 @@ ORDER BY ordinal_position;
 -- Success message
 DO $$
 BEGIN
-  RAISE NOTICE '✅ Migration complete!';
-  RAISE NOTICE '✅ Removed raw_photos and templated_photos columns';
-  RAISE NOTICE '✅ Only final_strip_url is now stored';
-  RAISE NOTICE '';
-  RAISE NOTICE '📊 Storage savings: ~87% reduction per session';
-  RAISE NOTICE '⚡ Upload speed: ~90% faster';
+  RAISE NOTICE 'Migration complete!';
+  RAISE NOTICE 'Removed raw_photos and templated_photos columns';
+  RAISE NOTICE 'Only final_strip_url is now stored';
+  RAISE NOTICE 'Storage savings: approximately 87 percent reduction per session';
+  RAISE NOTICE 'Upload speed: approximately 90 percent faster';
 END;
 $$;

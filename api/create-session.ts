@@ -39,7 +39,7 @@ export default async function handler(
     const protocol = host.includes('localhost') ? 'http' : 'https';
     const viewUrl = `${protocol}://${host}/session/${sessionId}`;
 
-    // Store session metadata in Supabase (only final strip)
+    // Store session metadata in Supabase (backward compatible with old schema)
     const { data, error } = await supabase
       .from('sessions')
       .insert({
@@ -49,7 +49,10 @@ export default async function handler(
         template_id: templateId,
         status: 'completed',
         expires_at: expiresAt.toISOString(),
-        completed_at: new Date().toISOString()
+        completed_at: new Date().toISOString(),
+        // Backward compatibility: empty arrays for old schema
+        raw_photos: [],
+        templated_photos: []
       })
       .select()
       .single();
