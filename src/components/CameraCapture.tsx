@@ -6,7 +6,7 @@ export const CameraCapture: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerRef = useRef<number | null>(null);
 
   const { session, addCapturedPhoto, goToStep, countdownSeconds } = useSession();
   const { templates } = useTemplates();
@@ -124,7 +124,7 @@ export const CameraCapture: React.FC = () => {
         clearTimeout(timerRef.current);
       }
     };
-  }, [countdown, isCapturing, cameraReady, capturedCount, capturePhoto, PHOTOS_TO_CAPTURE]);
+  }, [countdown, isCapturing, cameraReady, capturedCount, capturePhoto]);
 
   // Start capture sequence when camera is ready
   useEffect(() => {
@@ -132,7 +132,7 @@ export const CameraCapture: React.FC = () => {
       setIsCapturing(true);
       setCountdown(countdownSeconds);
     }
-  }, [cameraReady, isCapturing, capturedCount, countdownSeconds, PHOTOS_TO_CAPTURE]);
+  }, [cameraReady, isCapturing, capturedCount, countdownSeconds]);
 
   // Initialize camera on mount
   useEffect(() => {

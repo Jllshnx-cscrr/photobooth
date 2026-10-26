@@ -107,33 +107,22 @@ export const composeFinalImage = async (
   assignments: PhotoAssignment[]
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
-    console.log('Starting composeFinalImage', { 
-      templateId: template.id, 
-      photosCount: photos.length, 
-      assignmentsCount: assignments.length 
-    });
-    
     const canvas = document.createElement('canvas');
     canvas.width = template.width;
     canvas.height = template.height;
     const ctx = canvas.getContext('2d');
 
     if (!ctx) {
-      console.error('Could not get canvas context');
       reject(new Error('Could not get canvas context'));
       return;
     }
 
     let loadedImages = 0;
     const totalImages = 1 + (template.foregroundDataUrl ? 1 : 0) + assignments.length;
-    
-    console.log('Total images to load:', totalImages);
 
     const checkComplete = () => {
       loadedImages++;
-      console.log(`Loaded ${loadedImages}/${totalImages} images`);
       if (loadedImages === totalImages) {
-        console.log('All images loaded, generating final image');
         resolve(canvas.toDataURL('image/png', 1.0));
       }
     };
@@ -154,39 +143,25 @@ export const composeFinalImage = async (
     }
 
     // Draw photos in slots
-    assignments.forEach((assignment, index) => {
+    assignments.forEach((assignment) => {
       const slot = template.photoSlots.find((s) => s.id === assignment.slotId);
-      const photo = photos.find((p) => p.id === assignment.photoId);
+      
+      // If this slot is a mirror (has sourceSlotId), find the photo from the source slot
+      let photo: CapturedPhoto | undefined;
+      if (slot?.sourceSlotId) {
+        const sourceAssignment = assignments.find((a) => a.slotId === slot.sourceSlotId);
+        photo = sourceAssignment ? photos.find((p) => p.id === sourceAssignment.photoId) : undefined;
+      } else {
+        photo = photos.find((p) => p.id === assignment.photoId);
+      }
 
       if (!slot || !photo) {
-        console.warn(`Assignment ${index}: Missing slot or photo`, { 
-          slotId: assignment.slotId, 
-          photoId: assignment.photoId,
-          slotFound: !!slot,
-          photoFound: !!photo 
-        });
         checkComplete();
         return;
       }
-      
-      console.log(`Processing assignment ${index}:`, { 
-        slotId: slot.id, 
-        slotName: slot.name, 
-        photoId: photo.id,
-        isMirror: !!slot.sourceSlotId
-      });
 
       const photoImg = new Image();
-      
-      // Add timeout for image loading (30 seconds)
-      const imageTimeout = setTimeout(() => {
-        console.error(`Timeout loading photo for slot ${slot.name}`);
-        checkComplete();
-      }, 30000);
-      
       photoImg.onload = () => {
-        clearTimeout(imageTimeout);
-        console.log(`Photo loaded for slot ${slot.name}`);
         ctx.save();
 
         // Create clipping path for rounded corners
@@ -261,13 +236,10 @@ export const composeFinalImage = async (
         ctx.restore();
         checkComplete();
       };
-      
-      photoImg.onerror = (error) => {
-        clearTimeout(imageTimeout);
-        console.error(`Failed to load photo for slot ${slot.name}:`, error);
+      photoImg.onerror = () => {
+        console.error('Failed to load photo for slot');
         checkComplete();
       };
-      
       photoImg.src = photo.dataUrl;
     });
 

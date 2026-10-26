@@ -68,29 +68,6 @@ export interface PhotoSession {
   completedAt?: number;
 }
 
-export interface PersistedSession {
-  id: string;
-  created_at: string;
-  completed_at?: string;
-  expires_at: string;
-  raw_photos: string[];  // URLs to raw photos in blob storage
-  templated_photos: string[];  // URLs to templated photos
-  final_strip_url?: string;
-  recording_url?: string;
-  timelapse_url?: string;
-  qr_code_url?: string;
-  view_url: string;
-  template_id: string;
-  status: 'processing' | 'completed' | 'failed';
-}
-
-export interface UploadProgress {
-  stage: 'idle' | 'uploading_photos' | 'uploading_video' | 'generating_timelapse' | 'creating_qr' | 'completed' | 'error';
-  progress: number;  // 0-100
-  message: string;
-  error?: string;
-}
-
 export type SessionStep = 
   | 'welcome'
   | 'capture'
