@@ -55,11 +55,64 @@ export const FinalPreview: React.FC = () => {
 
       setFinalImageUrl(finalImage);
       setFinalImage(finalImage);
+      
+      // Automatically save PDF to local storage as backup
+      await saveLocalBackupPDF(finalImage, template, session.id);
+      
       setIsGenerating(false);
     } catch (err) {
       console.error('Error generating final image:', err);
       setError('Failed to generate final image. Please try again.');
       setIsGenerating(false);
+    }
+  };
+
+  const saveLocalBackupPDF = async (imageDataUrl: string, template: any, sessionId: string) => {
+    try {
+      console.log('💾 Saving local PDF backup...');
+      
+      // Convert pixels to inches at 300 DPI
+      const widthInches = template.width / 300;
+      const heightInches = template.height / 300;
+
+      // Create PDF
+      const pdf = new jsPDF({
+        orientation: widthInches > heightInches ? 'landscape' : 'portrait',
+        unit: 'in',
+        format: [widthInches, heightInches]
+      });
+
+      // Add the image
+      pdf.addImage(
+        imageDataUrl,
+        'PNG',
+        0,
+        0,
+        widthInches,
+        heightInches,
+        undefined,
+        'FAST'
+      );
+
+      // Save to localStorage as base64
+      const pdfBase64 = pdf.output('datauristring');
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const backupKey = `pdf-backup-${sessionId}-${timestamp}`;
+      
+      try {
+        localStorage.setItem(backupKey, pdfBase64);
+        console.log('✅ PDF backup saved to localStorage:', backupKey);
+        console.log('📁 To retrieve: localStorage.getItem("' + backupKey + '")');
+      } catch (storageError) {
+        console.warn('⚠️ localStorage full, saving to IndexedDB instead...');
+        // Fallback to IndexedDB if localStorage is full
+        const { default: localforage } = await import('localforage');
+        await localforage.setItem(backupKey, pdfBase64);
+        console.log('✅ PDF backup saved to IndexedDB:', backupKey);
+      }
+    } catch (error) {
+      console.error('Failed to save PDF backup:', error);
+      // Don't block the user flow if backup fails
     }
   };
 

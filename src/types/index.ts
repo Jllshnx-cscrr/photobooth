@@ -66,8 +66,6 @@ export interface PhotoSession {
   finalImageDataUrl?: string;
   createdAt: number;
   completedAt?: number;
-  recordingBlob?: Blob;
-  recordingConsent?: boolean;
 }
 
 export interface PersistedSession {

@@ -1,4 +1,42 @@
 import { PhotoSession, PersistedSession, UploadProgress } from '../types';
+import { put } from '@vercel/blob';
+
+// Helper to convert base64 to Blob
+const base64ToBlob = (base64: string, mimeType: string = 'image/png'): Blob => {
+  const base64Data = base64.split(',')[1];
+  const byteCharacters = atob(base64Data);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  return new Blob([byteArray], { type: mimeType });
+};
+
+// Upload a single file to Vercel Blob
+const uploadToBlob = async (
+  blob: Blob,
+  path: string,
+  token: string
+): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', blob, path);
+
+  const response = await fetch(`https://blob.vercel-storage.com`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to upload to Blob: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.url;
+};
 
 export const uploadSession = async (
   session: PhotoSession,
@@ -8,35 +46,16 @@ export const uploadSession = async (
     // Check if we're in development mode (local)
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     
-    // Update progress: Starting upload
-    onProgress?.({
-      stage: 'uploading_photos',
-      progress: 10,
-      message: 'Preparing photos...'
-    });
-
-    // Convert recording blob to base64 if available
-    let recordingData: { data: string; mimeType: string } | undefined;
-    if (session.recordingBlob) {
-      onProgress?.({
-        stage: 'uploading_video',
-        progress: 30,
-        message: 'Uploading recording...'
-      });
-
-      recordingData = await blobToBase64(session.recordingBlob);
-    }
-
     // In development, simulate upload (API routes only work on Vercel)
     if (isDevelopment) {
       console.log('🔧 Development Mode: Simulating upload...');
       console.log('Session ID:', session.id);
       console.log('Photos:', session.capturedPhotos.length);
-      console.log('Recording:', recordingData ? 'Yes' : 'No');
       console.log('Final Strip:', session.finalImageDataUrl ? 'Yes' : 'No');
       
       // Save session to localStorage for viewing later
       try {
+        // Save session data
         localStorage.setItem(`session-${session.id}`, JSON.stringify(session));
         console.log('✅ Session saved to localStorage for local viewing');
       } catch (e) {
@@ -67,44 +86,111 @@ export const uploadSession = async (
       };
     }
 
-    // Production mode: Use real API
-    const payload = {
-      sessionId: session.id,
-      rawPhotos: session.capturedPhotos.map(p => p.dataUrl),
-      templatedPhotos: session.capturedPhotos.map(p => p.dataUrl),
-      finalStrip: session.finalImageDataUrl,
-      recording: recordingData,
-      templateId: session.templateId
-    };
-
+    // Production mode: Upload directly to Vercel Blob
     onProgress?.({
       stage: 'uploading_photos',
-      progress: 60,
-      message: 'Uploading to cloud storage...'
+      progress: 5,
+      message: 'Preparing to upload photos...'
     });
 
-    // Upload to serverless function
-    const response = await fetch('/api/upload-session', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
+    const uploadedFiles: {
+      raw_photos: string[];
+      final_strip_url?: string;
+    } = {
+      raw_photos: []
+    };
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorMessage = 'Upload failed';
-      try {
-        const error = JSON.parse(errorText);
-        errorMessage = error.message || errorMessage;
-      } catch {
-        errorMessage = errorText || errorMessage;
-      }
-      throw new Error(errorMessage);
+    // Get blob token from environment (set by Vercel automatically)
+    const blobToken = import.meta.env.VITE_BLOB_READ_WRITE_TOKEN;
+    if (!blobToken) {
+      console.warn('Blob token not found - attempting direct API upload');
     }
 
-    const result = await response.json();
+    // Upload raw photos (use small progress increments)
+    const photoProgressIncrement = 70 / session.capturedPhotos.length;
+    for (let i = 0; i < session.capturedPhotos.length; i++) {
+      const photo = session.capturedPhotos[i];
+      onProgress?.({
+        stage: 'uploading_photos',
+        progress: 5 + (i * photoProgressIncrement),
+        message: `Uploading photo ${i + 1} of ${session.capturedPhotos.length}...`
+      });
+
+      try {
+        // Upload via API route (smaller payload per request)
+        const response = await fetch('/api/upload-file', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: session.id,
+            fileType: 'raw_photo',
+            fileIndex: i,
+            dataUrl: photo.dataUrl
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to upload photo ${i + 1}`);
+        }
+
+        const result = await response.json();
+        uploadedFiles.raw_photos.push(result.url);
+      } catch (error) {
+        console.error(`Failed to upload photo ${i + 1}:`, error);
+        throw error;
+      }
+    }
+
+    // Upload final strip
+    if (session.finalImageDataUrl) {
+      onProgress?.({
+        stage: 'uploading_photos',
+        progress: 80,
+        message: 'Uploading final photo strip...'
+      });
+
+      const response = await fetch('/api/upload-file', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: session.id,
+          fileType: 'final_strip',
+          dataUrl: session.finalImageDataUrl
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload final strip');
+      }
+
+      const result = await response.json();
+      uploadedFiles.final_strip_url = result.url;
+    }
+
+    // Save metadata to Supabase
+    onProgress?.({
+      stage: 'uploading_photos',
+      progress: 90,
+      message: 'Saving session data...'
+    });
+
+    const metadataResponse = await fetch('/api/create-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: session.id,
+        templateId: session.templateId,
+        rawPhotos: uploadedFiles.raw_photos,
+        finalStripUrl: uploadedFiles.final_strip_url,
+        expiryDays: parseInt(import.meta.env.VITE_SESSION_EXPIRY_DAYS || '30')
+      })
+    });
+
+    if (!metadataResponse.ok) {
+      throw new Error('Failed to save session metadata');
+    }
+
+    const metadata = await metadataResponse.json();
 
     onProgress?.({
       stage: 'completed',
@@ -114,7 +200,7 @@ export const uploadSession = async (
 
     return {
       success: true,
-      viewUrl: result.viewUrl
+      viewUrl: metadata.viewUrl
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Upload failed';
@@ -131,24 +217,6 @@ export const uploadSession = async (
       error: errorMessage
     };
   }
-};
-
-// Helper function to convert Blob to base64
-const blobToBase64 = (blob: Blob): Promise<{ data: string; mimeType: string }> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64data = reader.result as string;
-      // Remove the data URL prefix (e.g., "data:video/webm;base64,")
-      const base64 = base64data.split(',')[1];
-      resolve({
-        data: base64,
-        mimeType: blob.type
-      });
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
 };
 
 // Fetch a persisted session by ID
@@ -177,9 +245,6 @@ export const fetchSession = async (sessionId: string): Promise<PersistedSession 
             raw_photos: parsedSession.capturedPhotos?.map((p: any) => p.dataUrl) || [],
             templated_photos: parsedSession.capturedPhotos?.map((p: any) => p.dataUrl) || [],
             final_strip_url: parsedSession.finalImageDataUrl,
-            recording_url: parsedSession.recordingBlob ? URL.createObjectURL(parsedSession.recordingBlob) : undefined,
-            timelapse_url: undefined,
-            qr_code_url: undefined,
             view_url: `${window.location.origin}/session/${sessionId}`,
             template_id: parsedSession.templateId || 'default',
             status: 'completed'

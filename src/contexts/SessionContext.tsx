@@ -14,8 +14,6 @@ interface SessionContextType {
   updatePhotoEdits: (photoId: string, edits: PhotoEdit) => void;
   assignPhotoToSlot: (slotId: string, photoId: string) => void;
   setFinalImage: (dataUrl: string) => void;
-  setRecordingBlob: (blob: Blob) => void;
-  setRecordingConsent: (consent: boolean) => void;
   goToStep: (step: SessionStep) => void;
   clearCurrentSession: () => void;
 }
@@ -134,24 +132,6 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
     setCurrentStep(step);
   }, []);
 
-  const setRecordingBlob = useCallback((blob: Blob) => {
-    setSession((prev) => {
-      if (!prev) return prev;
-      const updated = { ...prev, recordingBlob: blob };
-      saveSession(updated);
-      return updated;
-    });
-  }, []);
-
-  const setRecordingConsent = useCallback((consent: boolean) => {
-    setSession((prev) => {
-      if (!prev) return prev;
-      const updated = { ...prev, recordingConsent: consent };
-      saveSession(updated);
-      return updated;
-    });
-  }, []);
-
   const clearCurrentSession = useCallback(() => {
     if (session) {
       clearSession(session.id);
@@ -174,8 +154,6 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
         updatePhotoEdits,
         assignPhotoToSlot,
         setFinalImage,
-        setRecordingBlob,
-        setRecordingConsent,
         goToStep,
         clearCurrentSession
       }}
