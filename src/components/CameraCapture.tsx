@@ -1,15 +1,23 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useSession } from '../contexts/SessionContext';
 import { useTemplates } from '../contexts/TemplateContext';
+import { useSessionRecording } from '../hooks/useSessionRecording';
+import { ConsentDialog } from './ConsentDialog';
+import { RecordingIndicator } from './RecordingIndicator';
 
 export const CameraCapture: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { session, addCapturedPhoto, goToStep, countdownSeconds } = useSession();
+  const { session, addCapturedPhoto, goToStep, countdownSeconds, setRecordingBlob, setRecordingConsent } = useSession();
   const { templates } = useTemplates();
+  
+  // Recording state
+  const [showConsentDialog, setShowConsentDialog] = useState(true);
+  const [hasConsent, setHasConsent] = useState(false);
+  const recording = useSessionRecording(streamRef.current);
 
   // Get active template to determine how many photos to capture
   const activeTemplate = templates.find(t => t.isDefault);
@@ -134,6 +142,40 @@ export const CameraCapture: React.FC = () => {
     }
   }, [cameraReady, isCapturing, capturedCount, countdownSeconds]);
 
+  // Handle consent
+  const handleConsentAccept = useCallback(() => {
+    setHasConsent(true);
+    setShowConsentDialog(false);
+    setRecordingConsent(true);
+  }, [setRecordingConsent]);
+
+  const handleConsentDecline = useCallback(() => {
+    setHasConsent(false);
+    setShowConsentDialog(false);
+    setRecordingConsent(false);
+  }, [setRecordingConsent]);
+
+  // Start recording when camera is ready and consent is given
+  useEffect(() => {
+    if (cameraReady && hasConsent && streamRef.current && !recording.isRecording) {
+      recording.startRecording();
+    }
+  }, [cameraReady, hasConsent, recording]);
+
+  // Stop recording when all photos are captured
+  useEffect(() => {
+    if (recording.isRecording && capturedCount >= PHOTOS_TO_CAPTURE) {
+      recording.stopRecording();
+    }
+  }, [capturedCount, PHOTOS_TO_CAPTURE, recording]);
+
+  // Save recording blob when recording stops
+  useEffect(() => {
+    if (recording.recordingBlob) {
+      setRecordingBlob(recording.recordingBlob);
+    }
+  }, [recording.recordingBlob, setRecordingBlob]);
+
   // Initialize camera on mount
   useEffect(() => {
     initCamera();
@@ -194,6 +236,13 @@ export const CameraCapture: React.FC = () => {
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
+      {/* Consent Dialog */}
+      <ConsentDialog
+        isOpen={showConsentDialog}
+        onAccept={handleConsentAccept}
+        onDecline={handleConsentDecline}
+      />
+
       {/* Flash Effect */}
       {showFlash && (
         <div className="fixed inset-0 bg-white z-50 animate-flash pointer-events-none" />
@@ -217,12 +266,21 @@ export const CameraCapture: React.FC = () => {
               Timer: {countdownSeconds}s | Photo {capturedCount + 1} of {PHOTOS_TO_CAPTURE}
             </p>
           </div>
-          <button
-            onClick={handleRestart}
-            className="bg-red-600/90 text-white px-3 py-1.5 text-sm rounded-lg hover:bg-red-700 transition-colors shadow-lg"
-          >
-            Restart
-          </button>
+          <div className="flex items-center gap-3">
+            {/* Recording Indicator */}
+            {recording.isRecording && (
+              <RecordingIndicator
+                duration={recording.duration}
+                isPaused={recording.isPaused}
+              />
+            )}
+            <button
+              onClick={handleRestart}
+              className="bg-red-600/90 text-white px-3 py-1.5 text-sm rounded-lg hover:bg-red-700 transition-colors shadow-lg"
+            >
+              Restart
+            </button>
+          </div>
         </div>
       </div>
 

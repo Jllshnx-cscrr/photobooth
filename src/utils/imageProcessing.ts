@@ -107,22 +107,33 @@ export const composeFinalImage = async (
   assignments: PhotoAssignment[]
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
+    console.log('Starting composeFinalImage', { 
+      templateId: template.id, 
+      photosCount: photos.length, 
+      assignmentsCount: assignments.length 
+    });
+    
     const canvas = document.createElement('canvas');
     canvas.width = template.width;
     canvas.height = template.height;
     const ctx = canvas.getContext('2d');
 
     if (!ctx) {
+      console.error('Could not get canvas context');
       reject(new Error('Could not get canvas context'));
       return;
     }
 
     let loadedImages = 0;
     const totalImages = 1 + (template.foregroundDataUrl ? 1 : 0) + assignments.length;
+    
+    console.log('Total images to load:', totalImages);
 
     const checkComplete = () => {
       loadedImages++;
+      console.log(`Loaded ${loadedImages}/${totalImages} images`);
       if (loadedImages === totalImages) {
+        console.log('All images loaded, generating final image');
         resolve(canvas.toDataURL('image/png', 1.0));
       }
     };
@@ -143,25 +154,31 @@ export const composeFinalImage = async (
     }
 
     // Draw photos in slots
-    assignments.forEach((assignment) => {
+    assignments.forEach((assignment, index) => {
       const slot = template.photoSlots.find((s) => s.id === assignment.slotId);
-      
-      // If this slot is a mirror (has sourceSlotId), find the photo from the source slot
-      let photo: CapturedPhoto | undefined;
-      if (slot?.sourceSlotId) {
-        const sourceAssignment = assignments.find((a) => a.slotId === slot.sourceSlotId);
-        photo = sourceAssignment ? photos.find((p) => p.id === sourceAssignment.photoId) : undefined;
-      } else {
-        photo = photos.find((p) => p.id === assignment.photoId);
-      }
+      const photo = photos.find((p) => p.id === assignment.photoId);
 
       if (!slot || !photo) {
+        console.warn(`Assignment ${index}: Missing slot or photo`, { 
+          slotId: assignment.slotId, 
+          photoId: assignment.photoId,
+          slotFound: !!slot,
+          photoFound: !!photo 
+        });
         checkComplete();
         return;
       }
+      
+      console.log(`Processing assignment ${index}:`, { 
+        slotId: slot.id, 
+        slotName: slot.name, 
+        photoId: photo.id,
+        isMirror: !!slot.sourceSlotId
+      });
 
       const photoImg = new Image();
       photoImg.onload = () => {
+        console.log(`Photo loaded for slot ${slot.name}`);
         ctx.save();
 
         // Create clipping path for rounded corners
@@ -236,10 +253,95 @@ export const composeFinalImage = async (
         ctx.restore();
         checkComplete();
       };
-      photoImg.onerror = () => {
-        console.error('Failed to load photo for slot');
+      photoImg.onerror = (error) => {
+        console.error(`Failed to load photo for slot ${slot.name}:`, error);
         checkComplete();
       };
+      
+      // Add timeout for image loading (30 seconds)
+      const imageTimeout = setTimeout(() => {
+        console.error(`Timeout loading photo for slot ${slot.name}`);
+        checkComplete();
+      }, 30000);
+      
+      photoImg.onload = () => {
+        clearTimeout(imageTimeout);
+        console.log(`Photo loaded for slot ${slot.name}`);
+        ctx.save();
+
+        // Create clipping path for rounded corners
+        if (slot.cornerRadius > 0) {
+          ctx.beginPath();
+          const x = slot.x;
+          const y = slot.y;
+          const w = slot.width;
+          const h = slot.height;
+          const r = slot.cornerRadius;
+          ctx.moveTo(x + r, y);
+          ctx.lineTo(x + w - r, y);
+          ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+          ctx.lineTo(x + w, y + h - r);
+          ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+          ctx.lineTo(x + r, y + h);
+          ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+          ctx.lineTo(x, y + r);
+          ctx.quadraticCurveTo(x, y, x + r, y);
+          ctx.closePath();
+          ctx.clip();
+        }
+
+        // Calculate aspect ratios
+        const slotRatio = slot.width / slot.height;
+        const imgRatio = photoImg.width / photoImg.height;
+
+        let srcX = 0, srcY = 0, srcWidth = photoImg.width, srcHeight = photoImg.height;
+        let destX = slot.x, destY = slot.y, destWidth = slot.width, destHeight = slot.height;
+
+        if (slot.fit === 'cover') {
+          // Cover: fill the slot completely, crop the excess
+          if (imgRatio > slotRatio) {
+            // Image is wider than slot - crop sides
+            srcHeight = photoImg.height;
+            srcWidth = photoImg.height * slotRatio;
+            srcX = (photoImg.width - srcWidth) / 2; // Center crop
+            srcY = 0;
+          } else {
+            // Image is taller than slot - crop top/bottom
+            srcWidth = photoImg.width;
+            srcHeight = photoImg.width / slotRatio;
+            srcX = 0;
+            srcY = (photoImg.height - srcHeight) / 2; // Center crop
+          }
+          
+          // Draw the cropped portion to fill the slot
+          ctx.drawImage(
+            photoImg,
+            srcX, srcY, srcWidth, srcHeight,
+            destX, destY, destWidth, destHeight
+          );
+        } else if (slot.fit === 'contain') {
+          // Contain: fit entire image inside slot, may have gaps
+          if (imgRatio > slotRatio) {
+            destWidth = slot.width;
+            destHeight = slot.width / imgRatio;
+            destX = slot.x;
+            destY = slot.y + (slot.height - destHeight) / 2;
+          } else {
+            destHeight = slot.height;
+            destWidth = slot.height * imgRatio;
+            destX = slot.x + (slot.width - destWidth) / 2;
+            destY = slot.y;
+          }
+          ctx.drawImage(photoImg, destX, destY, destWidth, destHeight);
+        } else {
+          // Fill: stretch to fill slot (not recommended)
+          ctx.drawImage(photoImg, destX, destY, destWidth, destHeight);
+        }
+
+        ctx.restore();
+        checkComplete();
+      };
+      
       photoImg.src = photo.dataUrl;
     });
 

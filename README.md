@@ -1,6 +1,22 @@
 # Photo Booth System
 
-A modern, interactive web-based photo booth system built with React, TypeScript, and Tailwind CSS.
+A modern, interactive web-based photo booth system built with React, TypeScript, and Tailwind CSS. Now with **session recording, timelapse generation, and QR code access!** 🎬📱
+
+## 🎉 New Features
+
+### Session Recording & Timelapse
+- **Automatic Recording**: Records your entire photobooth session
+- **Consent Dialog**: Privacy-conscious opt-in before recording
+- **Timelapse Generation**: Creates a fun sped-up video of your session
+- **Cloud Storage**: Securely stores videos and photos using Vercel Blob & Supabase
+- **QR Code Access**: Generate unique QR codes to view sessions on mobile
+- **Session View Page**: Beautiful mobile-optimized page to watch and download
+- **Automatic Expiration**: Sessions automatically deleted after 30 days (configurable)
+
+**👉 See `QUICK_START.md` for immediate testing!**
+**👉 See `SETUP_GUIDE.md` for complete deployment instructions!**
+
+---
 
 ## Features
 
@@ -36,38 +52,50 @@ A modern, interactive web-based photo booth system built with React, TypeScript,
 - Node.js 18+ and npm/yarn
 - Modern web browser with camera support
 - Camera device (webcam or built-in camera)
+- **[NEW]** Supabase account (free tier works) - for session storage
+- **[NEW]** Vercel account (free tier works) - for deployment and file storage
 
-### Setup Instructions
+### Quick Start
+
+**Want to test the new recording feature immediately?**
+👉 **Follow `QUICK_START.md` for 5-minute setup!**
+
+### Full Setup Instructions
 
 1. **Install Dependencies**
    ```bash
    npm install
    ```
 
-2. **Start Development Server**
+2. **Set Up Cloud Services** (Required for recording feature)
+   - Follow detailed instructions in `SETUP_GUIDE.md`
+   - Create Supabase project and run SQL schema
+   - Configure environment variables
+
+3. **Start Development Server**
    ```bash
    npm run dev
    ```
 
-3. **Build for Production**
+4. **Build for Production**
    ```bash
    npm run build
    ```
 
-4. **Preview Production Build**
-   ```bash
-   npm run preview
-   ```
+5. **Deploy to Vercel**
+   - Follow `DEPLOYMENT_CHECKLIST.md` for step-by-step deployment
 
 ## Usage
 
 ### For Users
 
 1. **Start Session**: Click "START PHOTO SESSION" on the welcome screen
-2. **Camera Capture**: Look at the camera - 8 photos will be captured automatically with 5-second countdown
-3. **Select Photos**: Click on exactly 4 photos you want to use
-4. **Customize**: Edit individual photos and select a layout
-5. **Preview & Download**: Review the final composition and download or print
+2. **Recording Consent**: Choose whether to record your session (photos work either way!)
+3. **Camera Capture**: Look at the camera - 8 photos will be captured automatically with 5-second countdown
+4. **Select Photos**: Click on exactly 4 photos you want to use
+5. **Customize**: Edit individual photos and select a layout
+6. **Preview & Download**: Review the final composition and download or print
+7. **Get Your QR Code**: Scan the QR code with your phone to access your session recording and photos anywhere!
 
 ### For Administrators
 
@@ -98,10 +126,17 @@ src/
 │   │   ├── AdminDashboard.tsx    # Template management
 │   │   └── TemplateDesigner.tsx  # Canvas-based designer
 │   ├── WelcomeScreen.tsx         # Landing page
-│   ├── CameraCapture.tsx         # Auto capture with countdown
+│   ├── CameraCapture.tsx         # Auto capture with countdown + recording
 │   ├── PhotoSelection.tsx        # Select 4 photos
 │   ├── PhotoEditor.tsx           # Edit & customize
-│   └── FinalPreview.tsx          # Download & print
+│   ├── FinalPreview.tsx          # Download & print + QR code
+│   ├── ConsentDialog.tsx         # [NEW] Recording consent
+│   ├── RecordingIndicator.tsx    # [NEW] REC badge
+│   └── QRCodeDisplay.tsx         # [NEW] QR code generation
+├── pages/
+│   └── SessionView.tsx           # [NEW] Public session viewing
+├── hooks/
+│   └── useSessionRecording.ts    # [NEW] Recording logic
 ├── contexts/
 │   ├── SessionContext.tsx        # Photo session state
 │   └── TemplateContext.tsx       # Template management
@@ -109,11 +144,26 @@ src/
 │   └── index.ts                  # TypeScript definitions
 ├── utils/
 │   ├── storage.ts                # LocalForage wrapper
-│   └── imageProcessing.ts        # Canvas operations
+│   ├── imageProcessing.ts        # Canvas operations
+│   ├── supabase.ts              # [NEW] Supabase client
+│   └── uploadSession.ts          # [NEW] Upload utilities
 ├── App.tsx                       # Routing
 ├── PhotoBoothApp.tsx            # Main app component
 └── main.tsx                      # Entry point
+
+api/                               # [NEW] Vercel serverless functions
+├── upload-session.ts             # Handle uploads
+└── get-session.ts                # Retrieve sessions
 ```
+
+## 📚 Documentation
+
+- **`QUICK_START.md`** - Test the recording feature in 5 minutes
+- **`SETUP_GUIDE.md`** - Complete setup and deployment instructions
+- **`DEPLOYMENT_CHECKLIST.md`** - Step-by-step deployment verification
+- **`supabase-schema.sql`** - Database schema for Supabase
+- **`PRINT_SIZES_GUIDE.md`** - Print size reference guide
+- **Individual feature guides** - See `md/` directory
 
 ## Configuration
 
@@ -146,14 +196,42 @@ To change from selecting 4 photos:
 
 ## Browser Compatibility
 
-- Chrome 90+ (recommended)
-- Firefox 88+
-- Safari 14+
-- Edge 90+
+### Desktop
+- Chrome 90+ (recommended) ✅
+- Firefox 88+ ✅
+- Safari 14+ ✅
+- Edge 90+ ✅
 
-**Note**: Camera access requires HTTPS in production or localhost in development.
+### Mobile
+- Chrome (Android) ✅
+- Safari (iOS 14.3+) ✅
+- Firefox (Android) ✅
+
+**Note**: 
+- Camera access requires HTTPS in production or localhost in development
+- MediaRecorder API required for recording (supported in all modern browsers)
+- QR code scanning works with any camera app
 
 ## Troubleshooting
+
+### Recording Not Working
+- Check camera permissions are granted
+- Verify MediaRecorder is supported (Chrome, Firefox, Safari 14.3+)
+- Ensure HTTPS connection (or localhost)
+- Check browser console for specific errors
+- See `SETUP_GUIDE.md` troubleshooting section
+
+### Upload Failing
+- Verify Supabase credentials in environment variables
+- Check Vercel Blob storage is configured
+- Ensure internet connection is stable
+- Review Vercel function logs for errors
+
+### QR Code Not Appearing
+- Verify upload completed successfully
+- Check Supabase database has session record
+- Ensure `qrcode` package is installed
+- See browser console for generation errors
 
 ### Camera Not Working
 - Grant camera permissions in browser
@@ -183,26 +261,77 @@ To change from selecting 4 photos:
 - Images are stored as data URLs for offline capability
 - Canvas operations are optimized for smooth editing
 - Automatic image resizing prevents memory issues
+- **[NEW]** Video recording optimized for web (2.5 Mbps bitrate)
+- **[NEW]** Efficient cloud uploads with progress tracking
+- **[NEW]** Lazy loading for session history
 
 ## Security Considerations
 
-- All data stored locally in browser
-- No automatic upload to external servers
+- All data stored locally in browser OR securely in cloud
+- No automatic upload to external servers (opt-in only)
 - Camera stream released when not in use
+- **[NEW]** Session IDs are unpredictable (not sequential)
+- **[NEW]** Row-level security in Supabase
+- **[NEW]** API keys protected server-side
+- **[NEW]** Automatic session expiration (30 days default)
+- **[NEW]** Recording consent required before starting
 - Admin access not password-protected (add authentication for production)
+
+## Cloud Services & Costs
+
+### Vercel (Deployment & Storage)
+- **Free Tier**: 500MB storage, 5GB bandwidth/month
+- **Typical Usage**: ~20-30 sessions per month on free tier
+- **Cost**: Free for most users, $0.15/GB for additional storage
+
+### Supabase (Database)
+- **Free Tier**: 500MB database, unlimited queries
+- **Typical Usage**: Thousands of sessions (metadata only)
+- **Cost**: Free for most users
+
+👉 See `SETUP_GUIDE.md` for detailed cost estimates
+
+## What's New in v2.0
+
+✨ **Session Recording**
+- Automatic camera recording during photobooth session
+- Privacy-conscious consent dialog
+- MediaRecorder API with WebM format
+- Recording indicator with duration counter
+
+✨ **Cloud Storage**
+- Vercel Blob for videos and images
+- Supabase for session metadata
+- Secure server-side uploads
+- Automatic file organization
+
+✨ **QR Code Access**
+- Dynamic QR code generation per session
+- Download QR code as PNG
+- Copy link to clipboard
+- Unique, unpredictable session URLs
+
+✨ **Mobile Session View**
+- Beautiful responsive design
+- Video player with controls
+- Photo strip display
+- Download buttons for all assets
+- Expiration date display
+
+✨ **Privacy & Security**
+- Informed consent before recording
+- Automatic 30-day expiration
+- No public session listing
+- Server-side API protection
 
 ## Future Enhancements
 
-- User authentication for admin panel
-- Cloud storage for templates
-- Video recording mode
-- Animated GIF export
-- Social media sharing
-- QR code for photo download
-- Email photo delivery
-- Custom stickers and text overlays
-- Green screen support
-- Multiple camera support
+- [ ] Operator session history dashboard
+- [ ] Actual timelapse speed conversion (FFmpeg.wasm)
+- [ ] Batch download (ZIP all files)
+- [ ] Social media sharing
+- [ ] Email/SMS delivery
+- [ ] Custom QR code branding
 
 ## License
 
@@ -216,12 +345,29 @@ Built with:
 - Tailwind CSS
 - Vite
 - LocalForage
-- Fabric.js (listed but canvas operations use native APIs)
+- **[NEW]** Vercel Blob (file storage)
+- **[NEW]** Supabase (database)
+- **[NEW]** QRCode.js (QR generation)
+- **[NEW]** JSZip (file compression)
+- jsPDF (PDF generation)
 
 ## Support
 
 For issues or questions:
-1. Check the troubleshooting section
-2. Review browser console for errors
-3. Ensure all dependencies are installed
-4. Verify camera permissions are granted
+1. Check `SETUP_GUIDE.md` → Troubleshooting section
+2. Review `DEPLOYMENT_CHECKLIST.md` for deployment issues
+3. Check browser console for errors
+4. Ensure all dependencies are installed (`npm install`)
+5. Verify environment variables are set correctly
+6. Check Vercel function logs (for production)
+7. Review Supabase logs (Database → Logs Explorer)
+
+**Quick Links:**
+- 🚀 [Quick Start Guide](QUICK_START.md)
+- 📖 [Setup Guide](SETUP_GUIDE.md)
+- ✅ [Deployment Checklist](DEPLOYMENT_CHECKLIST.md)
+- 🗄️ [Database Schema](supabase-schema.sql)
+
+---
+
+**🎉 Enjoy your enhanced photobooth with session recording and QR code access!**
