@@ -29,12 +29,12 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
             light: '#FFFFFF'
           }
         },
-        (error) => {
+        (error: Error | null | undefined) => {
           if (error) {
             console.error('QR Code generation error:', error);
           } else {
             // Also create a data URL for downloading
-            QRCode.toDataURL(url, { width: size }, (err, dataUrl) => {
+            QRCode.toDataURL(url, { width: size }, (err: Error | null | undefined, dataUrl: string) => {
               if (!err) {
                 setQrDataUrl(dataUrl);
               }
