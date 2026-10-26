@@ -177,86 +177,6 @@ export const composeFinalImage = async (
       });
 
       const photoImg = new Image();
-      photoImg.onload = () => {
-        console.log(`Photo loaded for slot ${slot.name}`);
-        ctx.save();
-
-        // Create clipping path for rounded corners
-        if (slot.cornerRadius > 0) {
-          ctx.beginPath();
-          const x = slot.x;
-          const y = slot.y;
-          const w = slot.width;
-          const h = slot.height;
-          const r = slot.cornerRadius;
-          ctx.moveTo(x + r, y);
-          ctx.lineTo(x + w - r, y);
-          ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-          ctx.lineTo(x + w, y + h - r);
-          ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-          ctx.lineTo(x + r, y + h);
-          ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-          ctx.lineTo(x, y + r);
-          ctx.quadraticCurveTo(x, y, x + r, y);
-          ctx.closePath();
-          ctx.clip();
-        }
-
-        // Calculate aspect ratios
-        const slotRatio = slot.width / slot.height;
-        const imgRatio = photoImg.width / photoImg.height;
-
-        let srcX = 0, srcY = 0, srcWidth = photoImg.width, srcHeight = photoImg.height;
-        let destX = slot.x, destY = slot.y, destWidth = slot.width, destHeight = slot.height;
-
-        if (slot.fit === 'cover') {
-          // Cover: fill the slot completely, crop the excess
-          if (imgRatio > slotRatio) {
-            // Image is wider than slot - crop sides
-            srcHeight = photoImg.height;
-            srcWidth = photoImg.height * slotRatio;
-            srcX = (photoImg.width - srcWidth) / 2; // Center crop
-            srcY = 0;
-          } else {
-            // Image is taller than slot - crop top/bottom
-            srcWidth = photoImg.width;
-            srcHeight = photoImg.width / slotRatio;
-            srcX = 0;
-            srcY = (photoImg.height - srcHeight) / 2; // Center crop
-          }
-          
-          // Draw the cropped portion to fill the slot
-          ctx.drawImage(
-            photoImg,
-            srcX, srcY, srcWidth, srcHeight,
-            destX, destY, destWidth, destHeight
-          );
-        } else if (slot.fit === 'contain') {
-          // Contain: fit entire image inside slot, may have gaps
-          if (imgRatio > slotRatio) {
-            destWidth = slot.width;
-            destHeight = slot.width / imgRatio;
-            destX = slot.x;
-            destY = slot.y + (slot.height - destHeight) / 2;
-          } else {
-            destHeight = slot.height;
-            destWidth = slot.height * imgRatio;
-            destX = slot.x + (slot.width - destWidth) / 2;
-            destY = slot.y;
-          }
-          ctx.drawImage(photoImg, destX, destY, destWidth, destHeight);
-        } else {
-          // Fill: stretch to fill slot (not recommended)
-          ctx.drawImage(photoImg, destX, destY, destWidth, destHeight);
-        }
-
-        ctx.restore();
-        checkComplete();
-      };
-      photoImg.onerror = (error) => {
-        console.error(`Failed to load photo for slot ${slot.name}:`, error);
-        checkComplete();
-      };
       
       // Add timeout for image loading (30 seconds)
       const imageTimeout = setTimeout(() => {
@@ -339,6 +259,12 @@ export const composeFinalImage = async (
         }
 
         ctx.restore();
+        checkComplete();
+      };
+      
+      photoImg.onerror = (error) => {
+        clearTimeout(imageTimeout);
+        console.error(`Failed to load photo for slot ${slot.name}:`, error);
         checkComplete();
       };
       
