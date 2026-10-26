@@ -6,7 +6,7 @@ export const CameraCapture: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { session, addCapturedPhoto, goToStep, countdownSeconds } = useSession();
   const { templates } = useTemplates();

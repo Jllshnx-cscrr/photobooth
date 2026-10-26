@@ -106,6 +106,15 @@ export const composeFinalImage = async (
   photos: CapturedPhoto[],
   assignments: PhotoAssignment[]
 ): Promise<string> => {
+  // DEBUG: Log what we're receiving
+  console.log('=== composeFinalImage DEBUG ===');
+  console.log('Template:', template.name, 'ID:', template.id);
+  console.log('Photos count:', photos.length);
+  console.log('Photos:', photos.map(p => ({ id: p.id, hasDataUrl: !!p.dataUrl })));
+  console.log('Assignments count:', assignments.length);
+  console.log('Assignments:', assignments);
+  console.log('Template slots:', template.photoSlots.map(s => ({ id: s.id, sourceSlotId: s.sourceSlotId })));
+  
   return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas');
     canvas.width = template.width;
@@ -144,21 +153,29 @@ export const composeFinalImage = async (
 
     // Draw photos in slots
     assignments.forEach((assignment) => {
+      console.log('Processing assignment:', assignment);
       const slot = template.photoSlots.find((s) => s.id === assignment.slotId);
+      console.log('Found slot:', slot?.id, slot?.name);
       
       // If this slot is a mirror (has sourceSlotId), find the photo from the source slot
       let photo: CapturedPhoto | undefined;
       if (slot?.sourceSlotId) {
+        console.log('This is a mirror slot, source:', slot.sourceSlotId);
         const sourceAssignment = assignments.find((a) => a.slotId === slot.sourceSlotId);
         photo = sourceAssignment ? photos.find((p) => p.id === sourceAssignment.photoId) : undefined;
+        console.log('Mirror photo from source:', photo?.id);
       } else {
         photo = photos.find((p) => p.id === assignment.photoId);
+        console.log('Direct photo:', photo?.id);
       }
 
       if (!slot || !photo) {
+        console.warn('Missing slot or photo!', { hasSlot: !!slot, hasPhoto: !!photo });
         checkComplete();
         return;
       }
+
+      console.log('Drawing photo', photo.id, 'in slot', slot.id);
 
       const photoImg = new Image();
       photoImg.onload = () => {

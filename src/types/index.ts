@@ -78,3 +78,24 @@ export interface CameraConfig {
   deviceId?: string;
   facingMode?: 'user' | 'environment';
 }
+
+export interface PersistedSession {
+  id: string;
+  created_at: string;
+  expires_at: string;
+  raw_photos?: string[];
+  templated_photos?: string[];
+  final_strip_url?: string;
+  timelapse_url?: string;
+  recording_url?: string;
+  view_url: string;
+  template_id: string;
+  status: 'completed' | 'processing' | 'error';
+}
+
+export interface UploadProgress {
+  stage: 'preparing' | 'uploading' | 'uploading_photos' | 'finalizing' | 'complete' | 'completed' | 'error';
+  progress: number;
+  message: string;
+  error?: string;
+}

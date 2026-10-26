@@ -28,13 +28,11 @@ export const FinalPreview: React.FC = () => {
         throw new Error('Template not found');
       }
 
-      const selectedPhotos = session.capturedPhotos.filter((p) =>
-        session.selectedPhotoIds.includes(p.id)
-      );
-
+      // Pass ALL captured photos, not just selected ones
+      // The assignments already specify which photos go where
       const finalImage = await composeFinalImage(
         template,
-        selectedPhotos,
+        session.capturedPhotos,
         session.photoAssignments
       );
 
