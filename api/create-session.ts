@@ -18,13 +18,16 @@ export default async function handler(
     const {
       sessionId,
       templateId,
-      rawPhotos,
       finalStripUrl,
       expiryDays = 30
     } = req.body;
 
     if (!sessionId) {
       return res.status(400).json({ error: 'Session ID is required' });
+    }
+
+    if (!finalStripUrl) {
+      return res.status(400).json({ error: 'Final strip URL is required' });
     }
 
     // Calculate expiry date
@@ -36,13 +39,11 @@ export default async function handler(
     const protocol = host.includes('localhost') ? 'http' : 'https';
     const viewUrl = `${protocol}://${host}/session/${sessionId}`;
 
-    // Store session metadata in Supabase
+    // Store session metadata in Supabase (only final strip)
     const { data, error } = await supabase
       .from('sessions')
       .insert({
         id: sessionId,
-        raw_photos: rawPhotos || [],
-        templated_photos: rawPhotos || [], // Same as raw for now
         final_strip_url: finalStripUrl,
         view_url: viewUrl,
         template_id: templateId,

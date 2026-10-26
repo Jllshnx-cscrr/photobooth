@@ -86,66 +86,20 @@ export const uploadSession = async (
       };
     }
 
-    // Production mode: Upload directly to Vercel Blob
+    // Production mode: Upload only final strip to Vercel Blob
     onProgress?.({
       stage: 'uploading_photos',
-      progress: 5,
-      message: 'Preparing to upload photos...'
+      progress: 10,
+      message: 'Preparing to upload final strip...'
     });
 
-    const uploadedFiles: {
-      raw_photos: string[];
-      final_strip_url?: string;
-    } = {
-      raw_photos: []
-    };
+    let finalStripUrl: string | undefined;
 
-    // Get blob token from environment (set by Vercel automatically)
-    const blobToken = import.meta.env.VITE_BLOB_READ_WRITE_TOKEN;
-    if (!blobToken) {
-      console.warn('Blob token not found - attempting direct API upload');
-    }
-
-    // Upload raw photos (use small progress increments)
-    const photoProgressIncrement = 70 / session.capturedPhotos.length;
-    for (let i = 0; i < session.capturedPhotos.length; i++) {
-      const photo = session.capturedPhotos[i];
-      onProgress?.({
-        stage: 'uploading_photos',
-        progress: 5 + (i * photoProgressIncrement),
-        message: `Uploading photo ${i + 1} of ${session.capturedPhotos.length}...`
-      });
-
-      try {
-        // Upload via API route (smaller payload per request)
-        const response = await fetch('/api/upload-file', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            sessionId: session.id,
-            fileType: 'raw_photo',
-            fileIndex: i,
-            dataUrl: photo.dataUrl
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to upload photo ${i + 1}`);
-        }
-
-        const result = await response.json();
-        uploadedFiles.raw_photos.push(result.url);
-      } catch (error) {
-        console.error(`Failed to upload photo ${i + 1}:`, error);
-        throw error;
-      }
-    }
-
-    // Upload final strip
+    // Upload final strip only
     if (session.finalImageDataUrl) {
       onProgress?.({
         stage: 'uploading_photos',
-        progress: 80,
+        progress: 30,
         message: 'Uploading final photo strip...'
       });
 
@@ -164,13 +118,15 @@ export const uploadSession = async (
       }
 
       const result = await response.json();
-      uploadedFiles.final_strip_url = result.url;
+      finalStripUrl = result.url;
+    } else {
+      throw new Error('No final image to upload');
     }
 
     // Save metadata to Supabase
     onProgress?.({
       stage: 'uploading_photos',
-      progress: 90,
+      progress: 70,
       message: 'Saving session data...'
     });
 
@@ -180,8 +136,7 @@ export const uploadSession = async (
       body: JSON.stringify({
         sessionId: session.id,
         templateId: session.templateId,
-        rawPhotos: uploadedFiles.raw_photos,
-        finalStripUrl: uploadedFiles.final_strip_url,
+        finalStripUrl: finalStripUrl,
         expiryDays: parseInt(import.meta.env.VITE_SESSION_EXPIRY_DAYS || '30')
       })
     });

@@ -12,25 +12,20 @@
 -- 5. Click "Run" or press Ctrl/Cmd + Enter
 -- ============================================================================
 
--- Create the sessions table
+-- Create the sessions table (stores only final strip URL)
 CREATE TABLE IF NOT EXISTS sessions (
   id TEXT PRIMARY KEY,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   completed_at TIMESTAMPTZ,
   expires_at TIMESTAMPTZ NOT NULL,
-  raw_photos JSONB DEFAULT '[]'::jsonb,
-  templated_photos JSONB DEFAULT '[]'::jsonb,
   final_strip_url TEXT,
-  recording_url TEXT,
-  timelapse_url TEXT,
-  qr_code_url TEXT,
   view_url TEXT NOT NULL,
   template_id TEXT,
   status TEXT DEFAULT 'processing' CHECK (status IN ('processing', 'completed', 'failed'))
 );
 
 -- Add helpful comment
-COMMENT ON TABLE sessions IS 'Stores photobooth session metadata and file URLs from Vercel Blob storage';
+COMMENT ON TABLE sessions IS 'Stores photobooth session metadata and final strip URL from Vercel Blob storage (raw photos not stored to reduce storage costs)';
 
 -- Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_sessions_created_at ON sessions(created_at DESC);
